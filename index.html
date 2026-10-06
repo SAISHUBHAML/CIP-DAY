@@ -53,6 +53,8 @@ button:focus-visible,.pl:focus-visible,input:focus-visible{outline:2px solid var
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}
 th{color:var(--mut);font-weight:600}
+.pk{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:999px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}
+.pk.on{background:var(--okbg);border-color:var(--ok);font-weight:700}
 .rm{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:6px;padding:2px 8px;font:inherit;font-size:12px;cursor:pointer;margin-left:6px}
 input[type=search],#tn{width:100%;max-width:320px;padding:8px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);font:inherit;margin-bottom:10px}
 .pl:disabled{cursor:default}
@@ -182,6 +184,8 @@ const gi=g=>G.find(x=>x[0]===g);
 // teams added by organisers, per game (saved with the results)
 const ex=g=>(Array.isArray(S.extra[g])?S.extra[g]:[]).filter(x=>typeof x==="string"&&x);
 let tmsg="";
+const NOKO=["s"],PK=["p0","p1","p2"],PL=["1st","2nd","3rd"],MD=["\u{1F947}","\u{1F948}","\u{1F949}"];// games without a knockout bracket
+const pod=g=>{const W=S.win[g]||{},all=mk(g).map(p=>p[0]).concat(ex(g));return PK.map(k=>all.includes(W[k])?W[k]:null)};
 function addTeam(){
  const t=document.getElementById("tn").value.trim().replace(/\s+/g," ").slice(0,60),lc=t.toLowerCase();if(!t)return;
  if(lc==="bye"||lc==="tbd"||mk(view).map(p=>p[0]).concat(ex(view)).some(n=>n.toLowerCase()===lc)){tmsg='"'+t+'" is already in this game.';render();return}
@@ -201,7 +205,7 @@ function build(g){
   const nx=[];for(let i=0;i<cur.length;i+=2)nx.push({a:cur[i].w||"TBD",b:cur[i+1]?(cur[i+1].w||"TBD"):"BYE"});cur=nx}
  return R}
 const rname=l=>l===14?"Round 1":l===7?"Round 2":l===1?"Final":l===2?"Semi-finals":l===4?"Quarter-finals":"Round of "+l*2;
-function prog(g){const R=build(g);let d=0,t=0;R.flat().forEach(m=>{if(!m.bye){t++;if(m.w)d++}});return[d,t,R]}
+function prog(g){if(NOKO.includes(g))return[pod(g)[0]?1:0,1,[]];const R=build(g);let d=0,t=0;R.flat().forEach(m=>{if(!m.bye){t++;if(m.w)d++}});return[d,t,R]}
 function head(){
  const tot=P.reduce((a,p)=>a+p[5].length,0);
  document.getElementById("stats").innerHTML=[[P.length,"students"],[8,"games"],[tot,"sign-ups"],[P.filter(p=>p[3]==="F").length,"women participants"]].map(x=>`<div class="st"><b>${x[0]}</b><span>${x[1]}</span></div>`).join("");
@@ -209,12 +213,26 @@ function head(){
 function home(){
  const mx=Math.max(...G.map(g=>mk(g[0]).length));
  let h='<div class="grid">'+G.map(g=>{const L=mk(g[0]),f=L.filter(p=>p[3]==="F").length,[d,t]=prog(g[0]);
-  return `<button class="gc" data-v="${g[0]}"><div class="e">${g[2]}</div><h3>${g[1]}</h3><div><b style="font-size:24px">${L.length}</b> <span class="small">players (${L.length-f} M, ${f} F)${ex(g[0]).length?", + "+ex(g[0]).length+" added":""}</span></div><div class="bar"><i style="width:${L.length/mx*100}%"></i></div><div class="bar g"><i style="width:${d/t*100}%"></i></div><div class="small">${d} of ${t} matches played</div></button>`}).join("")+"</div>";
+  return `<button class="gc" data-v="${g[0]}"><div class="e">${g[2]}</div><h3>${g[1]}</h3><div><b style="font-size:24px">${L.length}</b> <span class="small">players (${L.length-f} M, ${f} F)${ex(g[0]).length?", + "+ex(g[0]).length+" added":""}</span></div><div class="bar"><i style="width:${L.length/mx*100}%"></i></div><div class="bar g"><i style="width:${d/t*100}%"></i></div><div class="small">${NOKO.includes(g[0])?(pod(g[0])[0]?"Winner: "+esc(pod(g[0])[0]):"Single event, result pending"):d+" of "+t+" matches played"}</div></button>`}).join("")+"</div>";
  const nx=[];G.forEach(g=>{const R=prog(g[0])[2];R.forEach((r,i)=>r.forEach(m=>{if(!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD")nx.push([g,m,rname(R[i].length)])}))});
  h+=`<div class="box"><h2>Next matches to play</h2><div class="next">${nx.length?nx.slice(0,12).map(x=>`<div class="chip">${x[0][2]} ${esc(x[1].a)} vs ${esc(x[1].b)}<small>${x[0][1]}, ${x[2]}${tmx(x[0][0],x[1].k)}</small></div>`).join(""):'<span class="small">No matches waiting.</span>'}</div><p class="small">Showing ${Math.min(12,nx.length)} of ${nx.length} ready matches. Open a game to see its bracket.</p></div>`;
  if(edit)h+=`<div class="box"><h2>Check before the event (organisers only)</h2><div class="flag">Pranav Varadpande's mobile number is incomplete in the form responses.</div><div class="flag">Badminton: Sumitkumar Chandanshive is in two Round 1 matches (Group 1 match 3 and Group 2 match 3). Neha Mishra, Rubleen Khosa and Pranav Varadpande are not in the schedule.</div><div class="flag">8 students picked Volleyball without listing teammates, so the Volleyball bracket uses individual names. Replace them with team names once teams are set.</div></div>`;
  return h}
+function tail(g,L,X){let h="";
+ if(edit)h+=`<div class="box"><h2>Add a team</h2><p class="small">${NOKO.includes(g)?"Adds a new participant to this game.":"Adds a new entry to this game's bracket. "+(FIX[g]?"New entries are paired with each other in extra Round 1 matches.":"New entries take a bye slot if one is free; otherwise the bracket grows and results already entered may need checking.")}</p><input type="text" id="tn" maxlength="60" placeholder="Team or player name" aria-label="Team or player name"> <span class="act"><button data-a="addt">Add team</button></span>${tmsg?`<div class="flag">${esc(tmsg)}</div>`:""}${X.length?`<div class="next" style="margin-top:10px">${X.map((x,i)=>`<div class="chip">${esc(x)} <button class="rm" data-a="delt" data-i="${i}" aria-label="Remove ${esc(x)}">Remove</button></div>`).join("")}</div>`:""}</div>`;
+ h+=`<div class="box"><h2>Players</h2><input type="search" id="q" placeholder="Search name or branch" value="${esc(q)}"><div class="tw"><table><tr><th>#</th><th>Name</th><th>Class</th><th>Gender</th><th>Branch</th></tr>${L.filter(p=>(p[0]+p[4]).toLowerCase().includes(q.toLowerCase())).map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p[0])}</td><td>${p[2]}</td><td>${p[3]}</td><td>${esc(p[4])}</td></tr>`).join("")}${X.filter(x=>x.toLowerCase().includes(q.toLowerCase())).map(x=>`<tr><td>+</td><td>${esc(x)}</td><td colspan="3">Added by organisers</td></tr>`).join("")}</table></div></div>`;
+ return h}
+// single-event games: no bracket, organisers record 1st/2nd/3rd
+function race(g){
+ const info=gi(g),L=mk(g),X=ex(g),W=pod(g),all=L.map(p=>p[0]).concat(X);
+ let h=`<div class="top"><h2>${info[2]} ${info[1]}</h2><div class="act">${edit?'<button data-a="rst">Clear results</button>':""}</div></div>
+ <p class="small">${all.length} participants. Single event with no knockout rounds.</p>`;
+ if(W[0])h+=`<div class="champ">\u{1F3C6} Winner: ${esc(W[0])}</div>`;
+ h+=`<div class="box"><h2>Results</h2><div class="next">${PL.map((p,i)=>`<div class="chip">${MD[i]} ${p} place<small>${W[i]?esc(W[i]):"Pending"}</small></div>`).join("")}</div>`;
+ if(edit)h+=`<p class="small">Tap a participant to give them the next free place. Tap a placed participant to take their place away.</p><div class="next">${all.map(n=>{const i=W.indexOf(n);return `<button class="pk${i>=0?" on":""}" data-p="${esc(n)}">${i>=0?MD[i]+" ":""}${esc(n)}</button>`}).join("")}</div>`;
+ return h+"</div>"+tail(g,L,X)}
 function game(g){
+ if(NOKO.includes(g))return race(g);
  const [d,t,R]=prog(g),info=gi(g),L=mk(g),X=ex(g),fin=R[R.length-1][0];
  let h=`<div class="top"><h2>${info[2]} ${info[1]}</h2><div class="act">${edit?(FIX[g]?"":'<button data-a="shuf">New draw</button>')+'<button data-a="rst">Clear results</button>':""}</div></div>
  <p class="small">${L.length} players${X.length?", "+X.length+" added by organisers":""}, ${d} of ${t} matches played. ${FIX[g]?"Draw and times set by the organisers.":"Byes move straight to the next round."}</p><div class="bar g"><i style="width:${d/t*100}%"></i></div>`;
@@ -230,19 +248,21 @@ function game(g){
   const pb=x=>`<button class="pl ${c(x)}" ${ok(x)?`data-k="${m.k}" data-n="${esc(x)}"`:"disabled"}>${esc(x)}</button>`;
   const tt=TT&&TT[m.k]?`<div class="tm">${fmt(TT[m.k])}</div>`:"";
   return `<div class="m ${!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD"?"rdy":""}">${tt}${pb(m.a)}${pb(m.b)}</div>`}).join("")}</div>`).join("")+"</div></div>"+pn+sch;
- if(edit)h+=`<div class="box"><h2>Add a team</h2><p class="small">Adds a new entry to this game's bracket. ${FIX[g]?"New entries are paired with each other in extra Round 1 matches.":"New entries take a bye slot if one is free; otherwise the bracket grows and results already entered may need checking."}</p><input type="text" id="tn" maxlength="60" placeholder="Team or player name" aria-label="Team or player name"> <span class="act"><button data-a="addt">Add team</button></span>${tmsg?`<div class="flag">${esc(tmsg)}</div>`:""}${X.length?`<div class="next" style="margin-top:10px">${X.map((x,i)=>`<div class="chip">${esc(x)} <button class="rm" data-a="delt" data-i="${i}" aria-label="Remove ${esc(x)}">Remove</button></div>`).join("")}</div>`:""}</div>`;
- h+=`<div class="box"><h2>Players</h2><input type="search" id="q" placeholder="Search name or branch" value="${esc(q)}"><div class="tw"><table><tr><th>#</th><th>Name</th><th>Class</th><th>Gender</th><th>Branch</th></tr>${L.filter(p=>(p[0]+p[4]).toLowerCase().includes(q.toLowerCase())).map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p[0])}</td><td>${p[2]}</td><td>${p[3]}</td><td>${esc(p[4])}</td></tr>`).join("")}${X.filter(x=>x.toLowerCase().includes(q.toLowerCase())).map(x=>`<tr><td>+</td><td>${esc(x)}</td><td colspan="3">Added by organisers</td></tr>`).join("")}</table></div></div>`;
+ h+=tail(g,L,X);
  return h}
 function render(){head();const m=document.getElementById("main"),o=document.getElementById("q"),p=o&&document.activeElement===o?o.selectionStart:-1;
  document.getElementById("sub").textContent="Who is playing what, and live knockout brackets. "+(edit?"Tap a player in a match to mark them the winner.":"Results are updated by the organisers.");
  m.innerHTML=view==="home"?home():game(view);
  const s=document.getElementById("q");if(s){s.oninput=e=>{q=e.target.value;render()};if(p>=0){s.focus();s.setSelectionRange(p,p)}}}
 document.addEventListener("click",e=>{
- const b=e.target.closest("[data-v],[data-k],[data-a]");if(!b)return;const a=b.dataset.a;
+ const b=e.target.closest("[data-v],[data-k],[data-a],[data-p]");if(!b)return;const a=b.dataset.a;
  if(a==="tok"||a==="tokno"){ask=a==="tok";note("");foot();if(ask)document.getElementById("tk").focus();return}
  if(a==="tokok"){signin(document.getElementById("tk").value);return}
  if(a==="out"){signout();return}
- if((b.dataset.k||a)&&!edit)return;
+ if((b.dataset.k||b.dataset.p||a)&&!edit)return;
+ if(b.dataset.p){const W=S.win[view]=S.win[view]||{},n=b.dataset.p,cur=pod(view),i=cur.indexOf(n),fr=cur.indexOf(null);
+  if(i>=0)delete W[PK[i]];else if(fr>=0)W[PK[fr]]=n;else{note("All three places are filled. Tap a placed participant to free one.");return}
+  save();render();return}
  if(a==="addt"){addTeam();return}
  if(a==="delt"){const X=ex(view),i=+b.dataset.i;if(confirm('Remove "'+X[i]+'" from this game? Results already entered may need checking.')){X.splice(i,1);S.extra[view]=X;save();render()}return}
  if(b.dataset.v){view=b.dataset.v;q="";tmsg="";render();window.scrollTo(0,0)}
