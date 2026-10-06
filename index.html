@@ -95,7 +95,7 @@ const P=[
 ["Jatin","","M.Tech","M","Additive Manufacturing","bvtwr"],
 ["S. Ramakrishna","","M.Tech","M","ICMP","bw"],
 ["Harsh Saxena","","M.Tech","M","Additive Manufacturing","bw"],
-["DT26MTECH14013","","M.Tech","F","Defence Technologies","wsrlh"],
+["Vakada Keerthana Vedavathi","","M.Tech","F","Defence Technologies","wsrlh"],
 ["Karanam Mallikarjun Sahithi","","M.Tech","F","Lightweighting Engg","t"],
 ["Ch Manasa Gangotri","","M.Tech","F","Ophthalmic Engg","wrl"],
 ["Sai Krishna","","M.Tech","M","Additive Manufacturing","bvtw"],
@@ -204,7 +204,7 @@ function home(){
   return `<button class="gc" data-v="${g[0]}"><div class="e">${g[2]}</div><h3>${g[1]}</h3><div><b style="font-size:24px">${L.length}</b> <span class="small">players (${L.length-f} M, ${f} F)</span></div><div class="bar"><i style="width:${L.length/mx*100}%"></i></div><div class="bar g"><i style="width:${d/t*100}%"></i></div><div class="small">${d} of ${t} matches played</div></button>`}).join("")+"</div>";
  const nx=[];G.forEach(g=>{const R=prog(g[0])[2];R.forEach((r,i)=>r.forEach(m=>{if(!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD")nx.push([g,m,rname(R[i].length)])}))});
  h+=`<div class="box"><h2>Next matches to play</h2><div class="next">${nx.length?nx.slice(0,12).map(x=>`<div class="chip">${x[0][2]} ${esc(x[1].a)} vs ${esc(x[1].b)}<small>${x[0][1]}, ${x[2]}${tmx(x[0][0],x[1].k)}</small></div>`).join(""):'<span class="small">No matches waiting.</span>'}</div><p class="small">Showing ${Math.min(12,nx.length)} of ${nx.length} ready matches. Open a game to see its bracket.</p></div>`;
- if(edit)h+=`<div class="box"><h2>Check before the event (organisers only)</h2><div class="flag">Pranav Varadpande's mobile number is incomplete in the form responses.</div><div class="flag">Entry "DT26MTECH14013" has an email ID instead of a name.</div><div class="flag">Badminton: Sumitkumar Chandanshive is in two Round 1 matches (Group 1 match 3 and Group 2 match 3). Neha Mishra, Rubleen Khosa and Pranav Varadpande are not in the schedule.</div><div class="flag">8 students picked Volleyball without listing teammates, so the Volleyball bracket uses individual names. Replace them with team names once teams are set.</div></div>`;
+ if(edit)h+=`<div class="box"><h2>Check before the event (organisers only)</h2><div class="flag">Pranav Varadpande's mobile number is incomplete in the form responses.</div><div class="flag">Badminton: Sumitkumar Chandanshive is in two Round 1 matches (Group 1 match 3 and Group 2 match 3). Neha Mishra, Rubleen Khosa and Pranav Varadpande are not in the schedule.</div><div class="flag">8 students picked Volleyball without listing teammates, so the Volleyball bracket uses individual names. Replace them with team names once teams are set.</div></div>`;
  return h}
 function game(g){
  const [d,t,R]=prog(g),info=gi(g),L=mk(g),fin=R[R.length-1][0];
