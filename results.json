@@ -32,7 +32,9 @@
    "Sample Test 3",
    "Sample Test 4"
   ],
-  "w": []
+  "w": [
+   "Sample Test"
+  ]
  },
  "mem": {
   "v": {
