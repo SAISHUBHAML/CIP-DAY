@@ -220,16 +220,16 @@ function game(g){
  <p class="small">${L.length} players${X.length?", "+X.length+" added by organisers":""}, ${d} of ${t} matches played. ${FIX[g]?"Draw and times set by the organisers.":"Byes move straight to the next round."}</p><div class="bar g"><i style="width:${d/t*100}%"></i></div>`;
  if(fin.w)h+=`<div class="champ">\u{1F3C6} Champion: ${esc(fin.w)}</div>`;
  const nx=[];R.forEach((r,i)=>r.forEach(m=>{if(!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD")nx.push([m,rname(r.length)])}));
- h+=`<div class="box"><h2>Play next</h2><div class="next">${nx.length?nx.map(x=>`<div class="chip">${esc(x[0].a)} vs ${esc(x[0].b)}<small>${x[1]}${tmx(g,x[0].k)}</small></div>`).join(""):'<span class="small">Nothing waiting right now.</span>'}</div></div>`;
+ const pn=`<div class="box"><h2>Play next</h2><div class="next">${nx.length?nx.map(x=>`<div class="chip">${esc(x[0].a)} vs ${esc(x[0].b)}<small>${x[1]}${tmx(g,x[0].k)}</small></div>`).join(""):'<span class="small">Nothing waiting right now.</span>'}</div></div>`;
  const TT=TIMES[g];let sch="";
  if(TT){const rw=[];R.forEach(r=>r.forEach(m=>{if(TT[m.k]&&!m.bye)rw.push([TT[m.k],m])}));rw.sort((x,y)=>x[0]<y[0]?-1:x[0]>y[0]?1:0);
   sch=`<div class="box"><h2>Match schedule (tentative)</h2><div class="tw"><table><tr><th>Time</th><th>Round</th><th>Match</th><th>Result</th></tr>${rw.map(x=>`<tr><td>${fmt(x[0])}</td><td>Round ${+x[1].k[0]+1}</td><td>${esc(x[1].a)} vs ${esc(x[1].b)}</td><td>${x[1].w?"Winner: "+esc(x[1].w):"Pending"}</td></tr>`).join("")}</table></div></div>`}
- h+=sch+'<div class="box"><h2>Knockout bracket</h2><div class="br">'+R.map(r=>`<div class="rd"><h4>${rname(r.length)}</h4>${r.map(m=>{
+ h+='<div class="box"><h2>Knockout bracket</h2><div class="br">'+R.map(r=>`<div class="rd"><h4>${rname(r.length)}</h4>${r.map(m=>{
   const c=x=>m.bye&&x===m.b?"bye":x==="TBD"?"tbd":m.w?(m.w===x?"win":"lose"):"";
   const ok=x=>edit&&x!=="TBD"&&x!=="BYE"&&!m.bye&&m.a!=="TBD"&&m.b!=="TBD";
   const pb=x=>`<button class="pl ${c(x)}" ${ok(x)?`data-k="${m.k}" data-n="${esc(x)}"`:"disabled"}>${esc(x)}</button>`;
   const tt=TT&&TT[m.k]?`<div class="tm">${fmt(TT[m.k])}</div>`:"";
-  return `<div class="m ${!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD"?"rdy":""}">${tt}${pb(m.a)}${pb(m.b)}</div>`}).join("")}</div>`).join("")+"</div></div>";
+  return `<div class="m ${!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD"?"rdy":""}">${tt}${pb(m.a)}${pb(m.b)}</div>`}).join("")}</div>`).join("")+"</div></div>"+pn+sch;
  if(edit)h+=`<div class="box"><h2>Add a team</h2><p class="small">Adds a new entry to this game's bracket. ${FIX[g]?"New entries are paired with each other in extra Round 1 matches.":"New entries take a bye slot if one is free; otherwise the bracket grows and results already entered may need checking."}</p><input type="text" id="tn" maxlength="60" placeholder="Team or player name" aria-label="Team or player name"> <span class="act"><button data-a="addt">Add team</button></span>${tmsg?`<div class="flag">${esc(tmsg)}</div>`:""}${X.length?`<div class="next" style="margin-top:10px">${X.map((x,i)=>`<div class="chip">${esc(x)} <button class="rm" data-a="delt" data-i="${i}" aria-label="Remove ${esc(x)}">Remove</button></div>`).join("")}</div>`:""}</div>`;
  h+=`<div class="box"><h2>Players</h2><input type="search" id="q" placeholder="Search name or branch" value="${esc(q)}"><div class="tw"><table><tr><th>#</th><th>Name</th><th>Class</th><th>Gender</th><th>Branch</th></tr>${L.filter(p=>(p[0]+p[4]).toLowerCase().includes(q.toLowerCase())).map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p[0])}</td><td>${p[2]}</td><td>${p[3]}</td><td>${esc(p[4])}</td></tr>`).join("")}${X.filter(x=>x.toLowerCase().includes(q.toLowerCase())).map(x=>`<tr><td>+</td><td>${esc(x)}</td><td colspan="3">Added by organisers</td></tr>`).join("")}</table></div></div>`;
  return h}
