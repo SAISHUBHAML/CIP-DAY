@@ -34,7 +34,7 @@ button:focus-visible,.pl:focus-visible,input:focus-visible{outline:2px solid var
 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
 .top h2{font-size:28px;margin:0}
 .act button{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:7px 12px;font:inherit;cursor:pointer;margin-left:6px}
-.act button:hover{border-color:var(--acc)}
+.act button:hover{border-color:var(--acc)}.act button:disabled{opacity:.45;cursor:default;border-color:var(--bd)}
 .next{display:flex;flex-wrap:wrap;gap:8px}
 .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
 @media(max-width:640px){.cols{grid-template-columns:1fr}}
@@ -218,6 +218,7 @@ let tmsg="";
 // NOKO: single events decided by 1st/2nd/3rd. TEAM: entries are teams formed by organisers, not individuals.
 const TEAM=["v","w","r","h"],SZ={v:6,w:8,r:2,h:4},unit=g=>g==="r"?"pair":"team",cap=s=>s[0].toUpperCase()+s.slice(1);
 const ents=g=>(TEAM.includes(g)?[]:mk(g).map(p=>p[0])).concat(ex(g)),ready=g=>!TEAM.includes(g)||ex(g).length>=2;
+const played=g=>NOKO.includes(g)?pod(g).some(x=>x):ready(g)&&prog(g)[0]>0;
 const mem=(g,t)=>{const M=S.mem[g]&&S.mem[g][t];return Array.isArray(M)?M.filter(x=>typeof x==="string"):[]};
 const NOKO=["s","l","r","h"],PK=["p0","p1","p2"],PL=["1st","2nd","3rd"],MD=["\u{1F947}","\u{1F948}","\u{1F949}"];// games without a knockout bracket
 const pod=g=>{const W=S.win[g]||{},all=ents(g);return PK.map(k=>all.includes(W[k])?W[k]:null)};
@@ -271,13 +272,13 @@ function home(){
 function tail(g,L,X){let h="";const T=TEAM.includes(g),u=unit(g),U=cap(u),ql=q.toLowerCase();
  const taken=X.flatMap(x=>mem(g,x)),free=L.map(p=>p[0]).filter(n=>!taken.includes(n)).sort((a,b)=>a.localeCompare(b)),gen=n=>{const p=L.find(p=>p[0]===n);return p?" ("+p[3]+")":""},XP=xp(g);
  if(T)h+=`<div class="box"><h2>${U}s</h2>${X.length?`<div class="cols">${X.map((x,i)=>{const M=mem(g,x);return `<div class="grp"><div class="gh st"><span>${esc(x)}</span>${edit?`<button class="rm" data-a="delt" data-i="${i}" aria-label="Remove ${esc(x)}">Remove</button>`:`<small>${M.length?M.length+" players":""}</small>`}</div>${edit?`<div class="mr mb">${M.length?M.map(n=>`<span class="chip">${esc(n)}${gen(n)} <button class="rm" data-a="delp" data-i="${i}" data-n="${esc(n)}" aria-label="Remove ${esc(n)} from ${esc(x)}">×</button></span>`).join(""):'<span class="small">No members yet</span>'}</div><select data-mb="${i}" aria-label="Add a player to ${esc(x)}"${free.length?"":" disabled"}><option value="">${free.length?"Add a player...":"Everyone is in a "+u}</option>${free.map(n=>`<option value="${esc(n)}">${esc(n)}${gen(n)}</option>`).join("")}</select>`:`<div class="mr"><span>${M.length?M.map(esc).join(", "):"Members not listed"}</span></div>`}</div>`}).join("")}</div>${edit?`<p class="small">${free.length?free.length+" of "+L.length+" sign-ups are not in a "+u+" yet.":"All "+L.length+" sign-ups are in a "+u+"."}</p>`:""}`:`<span class="small">${U}s have not been formed yet. Everyone who signed up is listed below.</span>`}</div>`;
- if(edit)h+=`<div class="box"><h2>${T?"Form "+u+"s":"Add a player"}</h2>`+(T?`<p class="small">Add a ${u} by name, then pick its members in the ${U}s box above. Or split the ${L.length} sign-ups into random ${u}s and adjust them afterwards. ${NOKO.includes(g)?"":"Then place the "+u+"s in the bracket above with Edit draw."}</p><p><label for="ts">Players per ${u}</label> <input type="number" id="ts" min="2" max="20" value="${SZ[g]}"> <span class="act"><button data-a="mkt">Make random ${u}s</button></span></p>`:`<p class="small">${NOKO.includes(g)?"Adds a participant who did not sign up for this game.":"Adds a player who did not sign up for this game. Then place them in the bracket above with Edit draw."}</p>`)+`<input type="text" id="tn" maxlength="60" placeholder="${T?U+" name":"Player name"}" aria-label="${T?U+" name":"Player name"}"> <span class="act"><button data-a="addt">Add ${T?u:"player"}</button></span>${tmsg?`<div class="flag">${esc(tmsg)}</div>`:""}${!T&&X.length?`<div class="next" style="margin-top:10px">${X.map((x,i)=>`<div class="chip">${esc(x)} <button class="rm" data-a="delt" data-i="${i}" aria-label="Remove ${esc(x)}">Remove</button></div>`).join("")}</div>`:""}${T?`<h2 style="margin-top:16px">Add a player</h2><p class="small">For someone who did not sign up for this game. They join the list below and can then be picked for a ${u}.</p><input type="text" id="pn" maxlength="60" placeholder="Player name" aria-label="Player name"> <select id="pg" aria-label="Gender"><option value="M">Male</option><option value="F">Female</option></select> <span class="act"><button data-a="addp">Add player</button></span>${XP.length?`<div class="next" style="margin-top:10px">${XP.map((o,i)=>`<div class="chip">${esc(o.n)} (${o.g}) <button class="rm" data-a="delxp" data-i="${i}" aria-label="Remove ${esc(o.n)}">Remove</button></div>`).join("")}</div>`:""}`:""}</div>`;
+ if(edit)h+=`<div class="box"><h2>${T?"Form "+u+"s":"Add a player"}</h2>`+(T?`<p class="small">Add a ${u} by name, then pick its members in the ${U}s box above. Or split the ${L.length} sign-ups into random ${u}s and adjust them afterwards. ${NOKO.includes(g)?"":"Then place the "+u+"s in the bracket above with Edit draw."}</p><p><label for="ts">Players per ${u}</label> <input type="number" id="ts" min="2" max="20" value="${SZ[g]}"> <span class="act"><button data-a="mkt"${played(g)?" disabled":""}>Make random ${u}s</button></span></p>${played(g)?`<p class="small">Random ${u}s are switched off because this game already has results.</p>`:""}`:`<p class="small">${NOKO.includes(g)?"Adds a participant who did not sign up for this game.":"Adds a player who did not sign up for this game. Then place them in the bracket above with Edit draw."}</p>`)+`<input type="text" id="tn" maxlength="60" placeholder="${T?U+" name":"Player name"}" aria-label="${T?U+" name":"Player name"}"> <span class="act"><button data-a="addt">Add ${T?u:"player"}</button></span>${tmsg?`<div class="flag">${esc(tmsg)}</div>`:""}${!T&&X.length?`<div class="next" style="margin-top:10px">${X.map((x,i)=>`<div class="chip">${esc(x)} <button class="rm" data-a="delt" data-i="${i}" aria-label="Remove ${esc(x)}">Remove</button></div>`).join("")}</div>`:""}${T?`<h2 style="margin-top:16px">Add a player</h2><p class="small">For someone who did not sign up for this game. They join the list below and can then be picked for a ${u}.</p><input type="text" id="pn" maxlength="60" placeholder="Player name" aria-label="Player name"> <select id="pg" aria-label="Gender"><option value="M">Male</option><option value="F">Female</option></select> <span class="act"><button data-a="addp">Add player</button></span>${XP.length?`<div class="next" style="margin-top:10px">${XP.map((o,i)=>`<div class="chip">${esc(o.n)} (${o.g}) <button class="rm" data-a="delxp" data-i="${i}" aria-label="Remove ${esc(o.n)}">Remove</button></div>`).join("")}</div>`:""}`:""}</div>`;
  h+=`<div class="box"><h2>${T?"Signed-up players":"Players"}</h2><input type="search" id="q" placeholder="Search name or branch" value="${esc(q)}"><div class="tw"><table><tr><th>#</th><th>Name</th><th>Class</th><th>Gender</th><th>Branch</th></tr>${L.filter(p=>(p[0]+p[4]).toLowerCase().includes(ql)).map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p[0])}</td><td>${p[2]}</td><td>${p[3]}</td><td>${esc(p[4])}</td></tr>`).join("")}${T?"":X.filter(x=>x.toLowerCase().includes(ql)).map(x=>`<tr><td>+</td><td>${esc(x)}</td><td colspan="3">Added by organisers</td></tr>`).join("")}</table></div></div>`;
  return h}
 // single-event games: no bracket, organisers record 1st/2nd/3rd
 function race(g){
  const info=gi(g),L=mk(g),X=ex(g),W=pod(g),all=ents(g),T=TEAM.includes(g),u=unit(g);
- let h=`<div class="top"><h2>${info[2]} ${info[1]}</h2><div class="act">${edit?'<button data-a="rst">Clear results</button>':""}</div></div>
+ let h=`<div class="top"><h2>${info[2]} ${info[1]}</h2></div>
  <p class="small">${T?X.length+" "+u+"s from "+L.length+" sign-ups":all.length+" participants"}. Single event with no knockout rounds.</p>`;
  if(!ready(g))return h+`<div class="box"><h2>Results</h2><span class="small">Places can be recorded once at least two ${u}s are formed.</span></div>`+tail(g,L,X);
  if(W[0])h+=`<div class="champ">\u{1F3C6} Winner: ${esc(W[0])}</div>`;
@@ -288,7 +289,7 @@ function game(g){
  if(NOKO.includes(g))return race(g);
  if(!ready(g)){const i=gi(g),L=mk(g);return `<div class="top"><h2>${i[2]} ${i[1]}</h2></div><p class="small">${L.length} sign-ups. The bracket appears once at least two teams are formed.</p>`+tail(g,L,ex(g))}
  const [d,t,R]=prog(g),info=gi(g),L=mk(g),X=ex(g),fin=R[R.length-1][0];
- let h=`<div class="top"><h2>${info[2]} ${info[1]}</h2><div class="act">${edit?'<button data-a="cdraw">Clear draw</button><button data-a="rst">Clear results</button>':""}</div></div>
+ let h=`<div class="top"><h2>${info[2]} ${info[1]}</h2></div>
  <p class="small">${TEAM.includes(g)?X.length+" teams from "+L.length+" sign-ups":L.length+" players"+(X.length?", "+X.length+" added by organisers":"")}, ${d} of ${t} matches played. The organisers set the draw. Byes move straight to the next round.</p><div class="bar g"><i style="width:${t?d/t*100:0}%"></i></div>`;
  if(fin.w)h+=`<div class="champ">\u{1F3C6} Champion: ${esc(fin.w)}</div>`;
  const nx=[];R.forEach((r,i)=>r.forEach(m=>{if(!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD")nx.push([m,rname(r.length,i)])}));
@@ -324,7 +325,7 @@ document.addEventListener("click",e=>{
   save();render();return}
  if(a==="addt"){addTeam();return}
  if(a==="delt"){const X=ex(view),i=+b.dataset.i;if(confirm('Remove "'+X[i]+'" from this game? Results already entered may need checking.')){if(S.mem[view])delete S.mem[view][X[i]];X.splice(i,1);S.extra[view]=X;save();render()}return}
- if(a==="mkt"){const sz=Math.max(2,Math.min(20,Math.round(+document.getElementById("ts").value)||SZ[view])),nm=mk(view).map(p=>p[0]),u=unit(view),n=Math.max(2,Math.round(nm.length/sz));
+ if(a==="mkt"){if(played(view))return;const sz=Math.max(2,Math.min(20,Math.round(+document.getElementById("ts").value)||SZ[view])),nm=mk(view).map(p=>p[0]),u=unit(view),n=Math.max(2,Math.round(nm.length/sz));
   for(let i=nm.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[nm[i],nm[j]]=[nm[j],nm[i]]}
   if(confirm("Make "+n+" random "+u+"s from the "+nm.length+" sign-ups? Existing "+u+"s and results for this game will be cleared.")){const T=[],M={};for(let i=0;i<n;i++){T.push(cap(u)+" "+(i+1));M[T[i]]=nm.filter((_,k)=>k%n===i)}S.extra[view]=T;S.mem[view]=M;S.win[view]={};S.draw[view]=[];tmsg="";save();render()}return}
  if(b.dataset.v){view=b.dataset.v;q="";tmsg="";dmode=null;render();window.scrollTo(0,0)}
@@ -342,8 +343,7 @@ document.addEventListener("click",e=>{
  else if(a==="delp"){const t=ex(view)[+b.dataset.i],M=S.mem[view];if(t&&M&&Array.isArray(M[t])){M[t]=M[t].filter(n=>n!==b.dataset.n);save();render()}}
  else if(a==="mvu"||a==="mvd"){const i=+b.dataset.i;moveMatch(i,a==="mvu"?i-1:i+1)}
  else if(a==="dm"){dmode=!(dmode===null?slots(view).every(x=>!x):dmode);render()}
- else if(a==="cdraw"){if(confirm("Empty every first-round slot in this game? Results for this game will also be cleared.")){S.dt[view]=dtimes(view);S.draw[view]=slots(view).map(()=>"");S.win[view]={};dmode=true;save();render()}}
- else if(b.dataset.a==="rst"){if(confirm("Clear all results for this game?")){S.win[view]={};save();render()}}});
+});
 document.addEventListener("change",e=>{const i=e.target.dataset?e.target.dataset.mb:undefined,v=e.target.value;if(i===undefined||!edit||!v)return;
  const t=ex(view)[+i];if(!t||!mk(view).some(p=>p[0]===v)||ex(view).some(x=>mem(view,x).includes(v)))return;
  const M=S.mem[view]=S.mem[view]||{};M[t]=mem(view,t).concat(v);save();render();
