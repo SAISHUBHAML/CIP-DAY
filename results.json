@@ -8,9 +8,7 @@
    "1-1": "Junaid Sayyad",
    "0-5": "Neha Mishra"
   },
-  "b": {
-   "0-0": "Nikhil Singh Katiyar"
-  },
+  "b": {},
   "s": {},
   "l": {}
  },
@@ -27,5 +25,41 @@
   ]
  },
  "mem": {},
- "draw": {}
+ "draw": {
+  "b": [
+   "BYE",
+   "Sri Vadan Surakattula",
+   "Girada Narendrakumar",
+   "Shubham Chakraborty",
+   "Sumitkumar Chandanshive",
+   "Para Akhil",
+   "Razaul Mustafa",
+   "Jatin",
+   "Yash Chindhe",
+   "Sreerag P",
+   "Prahas",
+   "G Sanjay Aravindhan",
+   "Dhanush S",
+   "Devashish Nagpal",
+   "S. Ramakrishna",
+   "Harsh Saxena",
+   "Sai Krishna",
+   "Banothu Sagar",
+   "Sumitkumar Chandanshive",
+   "Sawan Kumar",
+   "Madhava",
+   "Pranav Anish",
+   "Vasu Dev Ganda",
+   "Al Amin",
+   "Junaid Sayyad",
+   "Kailash Sathya Narayanan",
+   "Hrutik Gaikwad",
+   "Rohit",
+   "",
+   "",
+   "",
+   ""
+  ]
+ },
+ "dt": {}
 }
