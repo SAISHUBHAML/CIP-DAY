@@ -46,6 +46,11 @@ button:focus-visible,.pl:focus-visible,input:focus-visible{outline:2px solid var
 .gh.st{cursor:default}#ts{width:70px;padding:7px 8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);font:inherit}
 .bh{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}.bh h2{margin:0}
 .m select{display:block;width:100%;border:0;border-bottom:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;font-size:14px;padding:7px 8px}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:4px 6px 4px 10px;background:var(--bg);border-bottom:1px solid var(--bd);font-size:12px;color:var(--mut);cursor:grab;user-select:none}
+.dh button{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:6px;font-size:11px;padding:2px 7px;margin-left:4px;cursor:pointer}
+.dh button:disabled{opacity:.35;cursor:default}
+.m.over{border-color:var(--acc);box-shadow:0 0 0 3px var(--hl)}
+.ti{display:block;width:100%;border:0;border-bottom:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;font-size:13px;padding:6px 8px}
 .dl{display:block;width:100%;border:0;background:var(--bg);color:var(--mut);font:inherit;font-size:12px;padding:5px 8px;cursor:pointer;text-align:right}
 .dl:hover{color:var(--acc)}
 .am{border:1px dashed var(--acc);background:none;color:var(--tx);border-radius:10px;padding:8px 10px;font:inherit;font-size:14px;cursor:pointer}
@@ -139,10 +144,13 @@ const FIX={b:g1.concat(g2)};
 const t1=["20:30","20:50","21:10","21:30","21:50","22:10","22:30"],TIMES={b:{}};
 t1.concat(t1).forEach((t,i)=>TIMES.b["0-"+i]="8,"+t);
 ["8,23:00","8,23:30","9,20:30","8,23:00","8,23:30","9,20:30","9,21:00"].forEach((t,i)=>TIMES.b["1-"+i]=t);
-const fmt=s=>{const[d,t]=s.split(","),[h,m]=t.split(":").map(Number);return d+" Oct, "+((h%12)||12)+":"+String(m).padStart(2,"0")+" "+(h<12?"AM":"PM")};
+// times are kept as "2026-10-08T20:30"; the older "8,20:30" form (day of October) is still read
+const iso=s=>{if(typeof s!=="string")return"";if(/^\d{4}-\d\d-\d\dT\d\d:\d\d$/.test(s))return s;const m=/^(\d{1,2}),(\d\d:\d\d)$/.exec(s);return m?"2026-10-"+m[1].padStart(2,"0")+"T"+m[2]:""};
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const fmt=s=>{const[y,mo,d,h,m]=s.split(/[-T:]/).map(Number);return d+" "+MON[mo-1]+", "+((h%12)||12)+":"+String(m).padStart(2,"0")+" "+(h<12?"AM":"PM")};
 // match time: first-round times travel with their match (S.dt) when organisers add or delete matches
-const dtimes=g=>{const n=slots(g).length/2,D=Array.isArray(S.dt[g])?S.dt[g]:null;return Array.from({length:n},(_,i)=>D?(typeof D[i]==="string"?D[i]:""):(TIMES[g]&&TIMES[g]["0-"+i])||"")};
-const tm=(g,k)=>!TIMES[g]?"":k.startsWith("0-")?dtimes(g)[+k.slice(2)]||"":TIMES[g][k]||"";
+const dtimes=g=>{const n=slots(g).length/2,D=Array.isArray(S.dt[g])?S.dt[g]:null;return Array.from({length:n},(_,i)=>iso(D?D[i]:TIMES[g]&&TIMES[g]["0-"+i]))};
+const tm=(g,k)=>{if(k.startsWith("0-"))return dtimes(g)[+k.slice(2)]||"";const r=S.rt[g];return iso(r&&k in r?r[k]:TIMES[g]&&TIMES[g][k])};
 const tkey=(g,m)=>tm(g,m.k)||"~",byt=(g,a,b)=>tkey(g,a)<tkey(g,b)?-1:tkey(g,a)>tkey(g,b)?1:0;
 const tmx=(g,k)=>tm(g,k)?", "+fmt(tm(g,k)):"";
 // Results live in results.json in the GitHub repo. Everyone reads it; only people with
@@ -151,7 +159,7 @@ const REPO="";// set to "owner/repo" only if the page is not served from owner.g
 const H=location.hostname,seg=location.pathname.split("/")[1]||"";
 const GH=REPO||(H.endsWith(".github.io")?H.split(".")[0]+"/"+(seg&&!seg.includes(".")?seg:H):"");
 const API="https://api.github.com/repos/"+GH,FILE="results.json";
-const norm=x=>({seed:(x&&x.seed)||{},win:(x&&x.win)||{},extra:(x&&x.extra)||{},mem:(x&&x.mem)||{},draw:(x&&x.draw)||{},dt:(x&&x.dt)||{}});
+const norm=x=>({seed:(x&&x.seed)||{},win:(x&&x.win)||{},extra:(x&&x.extra)||{},mem:(x&&x.mem)||{},draw:(x&&x.draw)||{},dt:(x&&x.dt)||{},rt:(x&&x.rt)||{}});
 let S=norm(),edit=!GH,tok="",sha="",br="main",ver=0,pend=0,chain=Promise.resolve(),ask=false;
 try{tok=localStorage.getItem("cip26tok")||""}catch(e){}
 if(!GH)try{S=norm(JSON.parse(localStorage.getItem("cip26")))}catch(e){}
@@ -220,6 +228,12 @@ function slots(g){
  if(Array.isArray(E)&&E.length>=2){const D=E.map(ok);if(D.length%2)D.push("");return D}
  const D=(FIX[g]?FIX[g].flat():[]).map(ok);let size=2;while(size<pool.length||size<D.length)size*=2;
  return Array.from({length:size},(_,i)=>D[i]||"")}
+function moveMatch(i,j){
+ const sl=slots(view),dt=dtimes(view),n=dt.length;if(i===j||i<0||j<0||i>=n||j>=n)return;
+ const ord=[...Array(n).keys()];ord.splice(j,0,ord.splice(i,1)[0]);
+ // players, time and first-round result travel with the match; later rounds are re-paired
+ const W=S.win[view]||{},N={};Object.keys(W).forEach(k=>{if(k.startsWith("0-")){const p=ord.indexOf(+k.slice(2));if(p>=0)N["0-"+p]=W[k]}});
+ S.draw[view]=ord.flatMap(o=>[sl[2*o],sl[2*o+1]]);S.dt[view]=ord.map(o=>dt[o]);S.win[view]=N;dmode=true;save();render()}
 function build(g){
  const sl=slots(g),W=S.win[g]||{},R=[];let cur=[];
  for(let i=0;i<sl.length;i+=2)cur.push({a:sl[i]||"TBD",b:sl[i+1]||"TBD"});
@@ -269,19 +283,20 @@ function game(g){
  if(fin.w)h+=`<div class="champ">\u{1F3C6} Champion: ${esc(fin.w)}</div>`;
  const nx=[];R.forEach((r,i)=>r.forEach(m=>{if(!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD")nx.push([m,rname(r.length,i)])}));
  const pn=`<div class="box"><h2>Play next</h2><div class="${nx.length?"cols":"next"}">${nx.length?nx.sort((x,y)=>byt(g,x[0],y[0])).map(x=>`<div class="chip">${esc(x[0].a)} vs ${esc(x[0].b)}<small>${x[1]}${tmx(g,x[0].k)}</small></div>`).join(""):'<span class="small">Nothing waiting right now.</span>'}</div></div>`;
- const TT=TIMES[g];let sch="";
- if(TT){const rw=[];R.forEach(r=>r.forEach(m=>{if(tm(g,m.k)&&!m.bye)rw.push([tm(g,m.k),m])}));rw.sort((x,y)=>x[0]<y[0]?-1:x[0]>y[0]?1:0);
-  sch=`<div class="box"><h2>Match schedule (tentative)</h2><div class="tw"><table><tr><th>Time</th><th>Round</th><th>Match</th><th>Result</th></tr>${rw.map(x=>`<tr><td>${fmt(x[0])}</td><td>Round ${+x[1].k[0]+1}</td><td>${esc(x[1].a)} vs ${esc(x[1].b)}</td><td>${x[1].w?"Winner: "+esc(x[1].w):"Pending"}</td></tr>`).join("")}</table></div></div>`}
+ let sch="";
+ {const rw=[];R.forEach(r=>r.forEach(m=>{if(tm(g,m.k)&&!m.bye)rw.push([tm(g,m.k),m])}));rw.sort((x,y)=>x[0]<y[0]?-1:x[0]>y[0]?1:0);
+  if(rw.length)sch=`<div class="box"><h2>Match schedule (tentative)</h2><div class="tw"><table><tr><th>Time</th><th>Round</th><th>Match</th><th>Result</th></tr>${rw.map(x=>`<tr><td>${fmt(x[0])}</td><td>Round ${+x[1].k[0]+1}</td><td>${esc(x[1].a)} vs ${esc(x[1].b)}</td><td>${x[1].w?"Winner: "+esc(x[1].w):"Pending"}</td></tr>`).join("")}</table></div></div>`}
  const sl=slots(g),dm=edit&&(dmode===null?sl.every(x=>!x):dmode),pool=ents(g).sort((x,y)=>x.localeCompare(y)),isT=TEAM.includes(g);
  const lab=n=>{const p=!isT&&P.find(p=>p[0]===n);return p?n+" ("+p[3]+")":n};
  const sel=i=>`<select data-s="${i}" aria-label="Round 1, slot ${i+1}"><option value="">Select ${isT?"team":"player"}...</option>${pool.filter(n=>n===sl[i]||!sl.includes(n)).map(n=>`<option value="${esc(n)}"${n===sl[i]?" selected":""}>${esc(lab(n))}</option>`).join("")}<option value="BYE"${sl[i]==="BYE"?" selected":""}>BYE (no opponent)</option></select>`;
- h+=`<div class="box"><div class="bh"><h2>Knockout bracket</h2>${edit?`<span class="act"><button data-a="dm">${dm?"Done placing":"Edit draw"}</button></span>`:""}</div>${dm?`<p class="small">Choose who goes in each first-round slot${isT?"":" (M or F is shown next to each name)"}. Pick BYE where there is no opponent. Use "Add match" and "Delete match" to change how many first-round matches there are; the later rounds adjust on their own. Press "Done placing" to start recording winners.</p>`:""}<div class="br">`+R.map((r,ri)=>`<div class="rd"><h4>${rname(r.length,ri)}</h4>${r.map((m,mi)=>{
+ h+=`<div class="box"><div class="bh"><h2>Knockout bracket</h2>${edit?`<span class="act"><button data-a="dm">${dm?"Done placing":"Edit draw"}</button></span>`:""}</div>${dm?`<p class="small">Choose who goes in each first-round slot${isT?"":" (M or F is shown next to each name)"}. Pick BYE where there is no opponent. Use "Add match" and "Delete match" to change how many first-round matches there are; the later rounds adjust on their own. Set a match's date and time in the box above its players. To reorder, drag a match by its "Match" strip or use the arrows. Press "Done placing" to start recording winners.</p>`:""}<div class="br">`+R.map((r,ri)=>`<div class="rd"><h4>${rname(r.length,ri)}</h4>${r.map((m,mi)=>{
   const c=x=>x==="BYE"?"bye":x==="TBD"?"tbd":m.w?(m.w===x?"win":"lose"):"";
   const ok=x=>edit&&x!=="TBD"&&x!=="BYE"&&!m.bye&&m.a!=="TBD"&&m.b!=="TBD";
   const pb=x=>`<button class="pl ${c(x)}" ${ok(x)?`data-k="${m.k}" data-n="${esc(x)}"`:"disabled"}>${esc(x)}</button>`;
   const tt=tm(g,m.k)?`<div class="tm">${fmt(tm(g,m.k))}</div>`:"";
-  if(dm&&!ri)return `<div class="m">${tt}${sel(2*mi)}${sel(2*mi+1)}${r.length>1?`<button class="dl" data-a="delm" data-i="${mi}" aria-label="Delete match ${mi+1}">Delete match</button>`:""}</div>`;
-  return `<div class="m ${!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD"?"rdy":""}">${tt}${pb(m.a)}${pb(m.b)}</div>`}).join("")}${dm&&!ri?'<button class="am" data-a="addm">+ Add match</button>':""}</div>`).join("")+"</div></div>"+pn+sch;
+  const tin=`<input type="datetime-local" class="ti" data-t="${m.k}" value="${esc(tm(g,m.k))}" aria-label="Date and time, ${rname(r.length,ri)} match ${mi+1}">`;
+  if(dm&&!ri)return `<div class="m" data-mt="${mi}"><div class="dh" draggable="true" data-m="${mi}" title="Drag to move this match"><span>⠿ Match ${mi+1}</span><span><button data-a="mvu" data-i="${mi}" aria-label="Move match ${mi+1} up"${mi?"":" disabled"}>▲</button><button data-a="mvd" data-i="${mi}" aria-label="Move match ${mi+1} down"${mi<r.length-1?"":" disabled"}>▼</button></span></div>${tin}${sel(2*mi)}${sel(2*mi+1)}${r.length>1?`<button class="dl" data-a="delm" data-i="${mi}" aria-label="Delete match ${mi+1}">Delete match</button>`:""}</div>`;
+  return `<div class="m ${!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD"?"rdy":""}">${dm&&!m.bye?tin:tt}${pb(m.a)}${pb(m.b)}</div>`}).join("")}${dm&&!ri?'<button class="am" data-a="addm">+ Add match</button>':""}</div>`).join("")+"</div></div>"+pn+sch;
  h+=tail(g,L,X);
  return h}
 function render(){head();const m=document.getElementById("main"),o=document.getElementById("q"),p=o&&document.activeElement===o?o.selectionStart:-1;
@@ -311,10 +326,19 @@ document.addEventListener("click",e=>{
    sl.splice(2*i,2);dt.splice(i,1);
    // keep first-round results with their matches; later rounds are re-paired, so their results start again
    const N={};Object.keys(W).forEach(k=>{if(!k.startsWith("0-"))return;const j=+k.slice(2);if(j!==i)N["0-"+(j>i?j-1:j)]=W[k]});S.win[view]=N}
-  S.draw[view]=sl;if(TIMES[view])S.dt[view]=dt;dmode=true;save();render()}
+  S.draw[view]=sl;S.dt[view]=dt;dmode=true;save();render()}
+ else if(a==="mvu"||a==="mvd"){const i=+b.dataset.i;moveMatch(i,a==="mvu"?i-1:i+1)}
  else if(a==="dm"){dmode=!(dmode===null?slots(view).every(x=>!x):dmode);render()}
- else if(a==="cdraw"){if(confirm("Empty every first-round slot in this game? Results for this game will also be cleared.")){if(TIMES[view])S.dt[view]=dtimes(view);S.draw[view]=slots(view).map(()=>"");S.win[view]={};dmode=true;save();render()}}
+ else if(a==="cdraw"){if(confirm("Empty every first-round slot in this game? Results for this game will also be cleared.")){S.dt[view]=dtimes(view);S.draw[view]=slots(view).map(()=>"");S.win[view]={};dmode=true;save();render()}}
  else if(b.dataset.a==="rst"){if(confirm("Clear all results for this game?")){S.win[view]={};save();render()}}});
+let dragM=null;const over=t=>document.querySelectorAll(".m.over").forEach(x=>x!==t&&x.classList.remove("over")),card=e=>dragM!==null&&e.target.closest?e.target.closest("[data-mt]"):null;
+document.addEventListener("dragstart",e=>{const d=edit&&e.target.closest?e.target.closest("[data-m]"):null;if(!d)return;dragM=+d.dataset.m;e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain","match");const c=d.closest(".m");if(c&&e.dataTransfer.setDragImage)e.dataTransfer.setDragImage(c,20,14)});
+document.addEventListener("dragover",e=>{const t=card(e);if(!t)return;e.preventDefault();over(t);t.classList.add("over")});
+document.addEventListener("drop",e=>{const t=card(e);if(!t)return;e.preventDefault();const f=dragM;dragM=null;moveMatch(f,+t.dataset.mt)});
+document.addEventListener("dragend",()=>{dragM=null;over()});
+document.addEventListener("change",e=>{const t=e.target.dataset?e.target.dataset.t:undefined;if(t===undefined||!edit)return;
+ // saved without redrawing, so the date box keeps focus while it is being filled in
+ const v=iso(e.target.value);if(t.startsWith("0-")){const dt=dtimes(view);dt[+t.slice(2)]=v;S.dt[view]=dt}else(S.rt[view]=S.rt[view]||{})[t]=v;save()});
 document.addEventListener("change",e=>{const s=e.target.dataset?e.target.dataset.s:undefined;if(s===undefined||!edit)return;
  const sl=slots(view),i=+s;sl[i]=e.target.value;S.draw[view]=sl;if(S.win[view])delete S.win[view]["0-"+(i>>1)];dmode=true;save();render();
  const n=document.querySelector('[data-s="'+i+'"]');if(n)n.focus()});
