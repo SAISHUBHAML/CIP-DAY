@@ -1,4 +1,9 @@
 {
  "seed": {},
- "win": {}
+ "win": {},
+ "extra": {
+  "b": [
+   "Sample Test"
+  ]
+ }
 }
