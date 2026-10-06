@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CIP Day 2026 - Sports & Activities</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f2f5f9;--card:#fff;--tx:#14213d;--mut:#5d6b82;--bd:#d8dfe9;--acc:#e4572e;--ok:#1b8a6b;--okbg:#dff3ec;--hl:#fff1d6}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1626;--card:#16213a;--tx:#e8edf6;--mut:#93a1ba;--bd:#2a3858;--acc:#ff7a52;--ok:#4cd1a6;--okbg:#12382f;--hl:#3a2e14}}
+:root[data-theme="dark"]{--bg:#0e1626;--card:#16213a;--tx:#e8edf6;--mut:#93a1ba;--bd:#2a3858;--acc:#ff7a52;--ok:#4cd1a6;--okbg:#12382f;--hl:#3a2e14}
+*,*:before,*:after{box-sizing:inherit}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:15px/1.5 "Avenir Next","Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding:0 16px 40px}
+.w{max-width:1100px;margin:0 auto}
+header{padding:28px 0 8px}
+h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:0 0 6px;letter-spacing:-.02em;font-weight:800}
+.sub{color:var(--mut);margin:0}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.st{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 16px;min-width:120px}
+.st b{display:block;font-size:26px;line-height:1.1}.st span{color:var(--mut);font-size:13px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}
+nav button{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:999px;padding:7px 14px;font:inherit;cursor:pointer;white-space:nowrap}
+nav button.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+button:focus-visible,.pl:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.gc{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.gc:hover{border-color:var(--acc)}
+.gc .e{font-size:28px}.gc h3{margin:4px 0 2px;font-size:17px}
+.bar{height:8px;background:var(--bd);border-radius:6px;overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:var(--acc)}.bar.g i{background:var(--ok)}
+.small{font-size:13px;color:var(--mut)}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin:14px 0}
+.box h2{font-size:17px;margin:0 0 8px}
+.flag{background:var(--hl);border-radius:8px;padding:6px 10px;margin:6px 0;font-size:14px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.top h2{font-size:28px;margin:0}
+.act button{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:7px 12px;font:inherit;cursor:pointer;margin-left:6px}
+.act button:hover{border-color:var(--acc)}
+.next{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--hl);border:1px solid var(--acc);border-radius:10px;padding:6px 10px;font-size:14px}
+.chip small{display:block;color:var(--mut)}
+.champ{background:var(--okbg);border:1px solid var(--ok);border-radius:14px;padding:14px 18px;font-size:20px;font-weight:700;margin:12px 0}
+.br{display:flex;gap:18px;overflow-x:auto;padding-bottom:10px;max-width:100%}
+.rd{display:flex;flex-direction:column;justify-content:space-around;gap:10px;min-width:210px;flex:none}
+.rd h4{margin:0;font-size:13px;color:var(--mut);font-weight:600;text-align:center}
+.m{background:var(--card);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.m.rdy{border-color:var(--acc);box-shadow:0 0 0 2px var(--hl)}
+.pl{padding:7px 10px;display:flex;justify-content:space-between;gap:6px;border-bottom:1px solid var(--bd);cursor:pointer;font-size:14px;background:none;border-left:0;border-right:0;border-top:0;width:100%;color:var(--tx);font-family:inherit;text-align:left}
+.m .pl:last-child{border-bottom:0}
+.pl.win{background:var(--okbg);font-weight:700}.pl.win:after{content:"\2713";color:var(--ok)}
+.pl.lose{color:var(--mut);text-decoration:line-through}
+.pl.tbd,.pl.bye{color:var(--mut);font-style:italic;cursor:default}
+.tw{overflow-x:auto}.tm{font-size:12px;color:var(--mut);padding:3px 10px;background:var(--bg);border-bottom:1px solid var(--bd)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{color:var(--mut);font-weight:600}
+input[type=search]{width:100%;max-width:320px;padding:8px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);font:inherit;margin-bottom:10px}
+.pl:disabled{cursor:default}
+footer{margin-top:24px;padding-top:14px;border-top:1px solid var(--bd);font-size:13px;color:var(--mut)}
+footer button{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer}
+footer input{padding:7px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);font:inherit;width:100%;max-width:320px;margin:6px 6px 6px 0}
+#note{min-height:1.5em;margin:0 0 8px}
+@media(prefers-reduced-motion:no-preference){.m.rdy{animation:p 1.8s ease-in-out infinite}@keyframes p{50%{box-shadow:0 0 0 5px var(--hl)}}}
+</style></head><body><div class="w">
+<header><h1>CIP Day 2026: Sports &amp; Activities</h1>
+<p class="sub" id="sub"></p></header>
+<div class="stats" id="stats"></div>
+<nav id="nav"></nav>
+<main id="main"></main>
+<footer id="ft"></footer>
+</div>
+<script>
+// [name, (mobile removed for the public site), class, gender, branch, games]
+const P=[
+["Nikhil Singh Katiyar","","M.Tech","M","Smart Mobility","bwsrlh"],
+["Neha Mishra","","Ph.D.","F","MSME & Chemical Engg","bwsrlh"],
+["Sri Vadan Surakattula","","M.Tech","M","Lightweight Engg","bwrlh"],
+["Girada Narendrakumar","","Ph.D.","M","CIP","b"],
+["Shubham Chakraborty","","Ph.D.","M","Fluid Mechanics / ID","b"],
+["Sumitkumar Chandanshive","","M.Tech","M","MDI","bvtw"],
+["Rubleen Khosa","","Ph.D.","F","BME and BT","bvtwslh"],
+["Para Akhil","","M.Tech","M","ICMP","bw"],
+["Firdaus Ali","","Ph.D.","M","PhD","sl"],
+["Vishnu Varun","","M.Tech","M","MDI","vw"],
+["Mohana Krishnan H","","M.Tech","M","Ophthalmic Engg","wr"],
+["Razaul Mustafa","","M.Tech","M","MDI","bsrl"],
+["Yash Chindhe","","M.Tech","M","Defence Technologies","b"],
+["Sreerag P","","Ph.D.","M","Physics","bvw"],
+["Pranav Varadpande","","M.Tech","M","Smart Mobility","b"],
+["Aditya Naik","","M.Tech","M","Additive Manufacturing","t"],
+["Prahas","","M.Tech","M","Smart Mobility","btwsrlh"],
+["G Sanjay Aravindhan","","Ph.D.","M","MSME & BME","b"],
+["Dhanush S","","M.Tech","M","Defence Technologies","bw"],
+["Devashish Nagpal","","M.Tech","M","Smart Mobility","btwsrlh"],
+["Yadla Komal Tulasi Swamy","","M.Tech","M","Additive Manufacturing","vt"],
+["Jatin","","M.Tech","M","Additive Manufacturing","bvtwr"],
+["S. Ramakrishna","","M.Tech","M","ICMP","bw"],
+["Harsh Saxena","","M.Tech","M","Additive Manufacturing","bw"],
+["DT26MTECH14013","","M.Tech","F","Defence Technologies","wsrlh"],
+["Karanam Mallikarjun Sahithi","","M.Tech","F","Lightweighting Engg","t"],
+["Ch Manasa Gangotri","","M.Tech","F","Ophthalmic Engg","wrl"],
+["Sai Krishna","","M.Tech","M","Additive Manufacturing","bvtw"],
+["Banothu Sagar","","M.Tech","M","Smart Mobility","bvwsrlh"],
+["Sawan Kumar","","M.Tech","M","Ophthalmic Engg","bvsrlh"],
+["Madhava","","M.Tech","M","Additive Manufacturing","bvw"],
+["Pranav Anish","","M.Tech","M","MDI","bvtwsrlh"],
+["Vasu Dev Ganda","","M.Tech","M","MDI","bwsrlh"],
+["Al Amin","","Ph.D.","M","ID-PhD","bv"],
+["Junaid Sayyad","","M.Tech","M","Additive Manufacturing","bvtwsrlh"],
+["Syed Nasir Ahmed","","M.Tech","M","Additive Manufacturing","w"],
+["Hrutik Gaikwad","","M.Tech","M","Additive Manufacturing","bvwsrlh"],
+["Hardik Gupta","","M.Tech","M","MDI","tw"],
+["Bandi Shiva Kumar","","M.Tech","M","Lightweighting Engg","wrlh"],
+["Kailash Sathya Narayanan","","M.Tech","M","MDI","brl"],
+["Vishnu Babu","","M.Sc.","M","Medical Physics","wsrlh"],
+["Rohit","","M.Tech","M","Defence Technologies","btwsrlh"],
+["Shubham","","M.Tech","M","Defence Technology","wrlh"],
+["Sreehari K N","","M.Tech","M","Defence Technologies","wrlh"]];
+const G=[["b","Badminton","\u{1F3F8}","sport"],["v","Volleyball","\u{1F3D0}","sport"],["t","Table Tennis","\u{1F3D3}","sport"],["w","Tug of War","\u{1FAA2}","activity"],["s","Slow Cycling","\u{1F6B2}","activity"],["r","Three Leg Race","\u{1F45F}","activity"],["l","Lemon Spoon Race","\u{1F944}","activity"],["h","Beg Borrow Steal","\u{1F3AF}","activity"]];
+const g1=[["Nikhil Singh Katiyar","Sri Vadan Surakattula"],["Girada Narendrakumar","Shubham Chakraborty"],["Sumitkumar Chandanshive","Para Akhil"],["Razaul Mustafa","Jatin"],["Yash Chindhe","Sreerag P"],["Prahas","G Sanjay Aravindhan"],["Dhanush S","Devashish Nagpal"]];
+const g2=[["S. Ramakrishna","Harsh Saxena"],["Sai Krishna","Banothu Sagar"],["Sumitkumar Chandanshive","Sawan Kumar"],["Madhava","Pranav Anish"],["Vasu Dev Ganda","Al Amin"],["Junaid Sayyad","Kailash Sathya Narayanan"],["Hrutik Gaikwad","Rohit"]];
+const FIX={b:g1.concat(g2)};
+const t1=["20:30","20:50","21:10","21:30","21:50","22:10","22:30"],TIMES={b:{}};
+t1.concat(t1).forEach((t,i)=>TIMES.b["0-"+i]="8,"+t);
+["8,23:00","8,23:30","9,20:30","8,23:00","8,23:30","9,20:30","9,21:00"].forEach((t,i)=>TIMES.b["1-"+i]=t);
+const fmt=s=>{const[d,t]=s.split(","),[h,m]=t.split(":").map(Number);return d+" Oct, "+((h%12)||12)+":"+String(m).padStart(2,"0")+" "+(h<12?"AM":"PM")};
+const tmx=(g,k)=>TIMES[g]&&TIMES[g][k]?", "+fmt(TIMES[g][k]):"";
+// Results live in results.json in the GitHub repo. Everyone reads it; only people with
+// write access to the repo (signed in below with their own token) can change it.
+const REPO="";// set to "owner/repo" only if the page is not served from owner.github.io/repo
+const H=location.hostname,seg=location.pathname.split("/")[1]||"";
+const GH=REPO||(H.endsWith(".github.io")?H.split(".")[0]+"/"+(seg&&!seg.includes(".")?seg:H):"");
+const API="https://api.github.com/repos/"+GH,FILE="results.json";
+const norm=x=>({seed:(x&&x.seed)||{},win:(x&&x.win)||{}});
+let S=norm(),edit=!GH,tok="",sha="",br="main",ver=0,pend=0,chain=Promise.resolve(),ask=false;
+try{tok=localStorage.getItem("cip26tok")||""}catch(e){}
+if(!GH)try{S=norm(JSON.parse(localStorage.getItem("cip26")))}catch(e){}
+const note=t=>{const n=document.getElementById("note");if(n)n.textContent=t};
+const gh=(p,o={})=>fetch(API+p,{...o,cache:"no-store",headers:{Accept:"application/vnd.github+json",Authorization:"Bearer "+tok}});
+async function pull(force){
+ const v=ver,was=JSON.stringify(S);let nw=null,ns=null;
+ try{
+  if(edit){const r=await gh("/contents/"+FILE+"?ref="+br);
+   if(r.ok){const j=await r.json();ns=j.sha;nw=JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\s/g,"")))))}
+   else if(r.status===404){ns="";nw={}}}
+  else{const r=await fetch(FILE+"?t="+Date.now(),{cache:"no-store"});if(r.ok)nw=await r.json()}
+ }catch(e){}
+ if(nw&&v===ver&&!pend){S=norm(nw);if(ns!==null)sha=ns}
+ if(force||JSON.stringify(S)!==was)render()}
+function save(){
+ ver++;
+ if(!GH){try{localStorage.setItem("cip26",JSON.stringify(S))}catch(e){}return}
+ pend++;note("Saving...");
+ chain=chain.then(async()=>{
+  if(--pend>0)return;
+  const body={message:"Update results",content:btoa(unescape(encodeURIComponent(JSON.stringify(S,null,1)))),branch:br};if(sha)body.sha=sha;
+  let bad="";
+  try{const r=await gh("/contents/"+FILE,{method:"PUT",body:JSON.stringify(body)});
+   if(r.ok)sha=(await r.json()).content.sha;
+   else bad=r.status===409||r.status===422?"Another organiser saved at the same moment. Showing the latest results; please redo your last change.":r.status===401||r.status===403||r.status===404?"Not saved: your token cannot write to this repository.":"Not saved (GitHub error "+r.status+").";
+  }catch(e){bad="Not saved: no connection."}
+  if(pend)return;
+  if(bad){note(bad);ver++;await pull(true)}else note("Saved. Players see it within about a minute.")})}
+async function signin(t,quiet){
+ tok=(t||"").trim();if(!tok)return;if(!quiet)note("Checking...");
+ let ok=false,err="That token does not have write access to this repository.";
+ try{const r=await gh("");if(r.ok){const j=await r.json();if(j.permissions&&j.permissions.push){ok=true;br=j.default_branch||br}}}catch(e){err="Could not reach GitHub. Try again."}
+ if(ok){edit=true;ask=false;try{localStorage.setItem("cip26tok",tok)}catch(e){}note("Organiser mode is on.")}
+ else{tok="";if(!quiet||err[0]==="T"){try{localStorage.removeItem("cip26tok")}catch(e){}}note(quiet?"":err)}
+ foot();await pull(true)}
+function signout(){tok="";edit=false;sha="";try{localStorage.removeItem("cip26tok")}catch(e){}note("");foot();pull(true)}
+function foot(){
+ const f=document.getElementById("ft");
+ f.innerHTML='<p id="note" role="status" aria-live="polite">'+esc(document.getElementById("note")?document.getElementById("note").textContent:"")+'</p>'+(
+  !GH?'Local preview: results are saved in this browser only.':
+  edit?'Organiser mode: your changes are saved for everyone. <button data-a="out">Sign out</button>':
+  ask?'<label for="tk">Paste your GitHub access token (needs write access to '+esc(GH)+'). It stays in this browser.</label><br><input id="tk" type="password" autocomplete="off"><button data-a="tokok">Sign in</button> <button data-a="tokno">Cancel</button>':
+  'View only. Results are updated by the organisers. <button data-a="tok">Organiser sign-in</button>')}
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const mk=g=>P.filter(p=>p[5].includes(g));
+const gi=g=>G.find(x=>x[0]===g);
+let view="home",q="";
+function rnd(s){return()=>(s=(s*1664525+1013904223)>>>0)/4294967296}
+function build(g){
+ const e=mk(g).map(p=>p[0]),r=rnd((S.seed[g]||1)*7919+g.charCodeAt(0)),n=e.length;
+ for(let i=n-1;i>0;i--){const j=Math.floor(r()*(i+1));[e[i],e[j]]=[e[j],e[i]]}
+ let size=2;while(size<n)size*=2;
+ let o=[1];while(o.length<size){const L=o.length*2;o=o.flatMap(x=>[x,L+1-x])}
+ const W=S.win[g]||{},R=[];let cur=[];
+ if(FIX[g])cur=FIX[g].map(x=>({a:x[0],b:x[1]}));else for(let i=0;i<size;i+=2)cur.push({a:e[o[i]-1]||"BYE",b:e[o[i+1]-1]||"BYE"});
+ for(let d=0;;d++){
+  cur.forEach((m,i)=>{m.k=d+"-"+i;m.bye=m.b==="BYE";m.w=m.bye?(m.a==="TBD"?null:m.a):(m.a==="TBD"||m.b==="TBD")?null:([m.a,m.b].includes(W[m.k])?W[m.k]:null)});
+  R.push(cur);if(cur.length===1)break;
+  const nx=[];for(let i=0;i<cur.length;i+=2)nx.push({a:cur[i].w||"TBD",b:cur[i+1]?(cur[i+1].w||"TBD"):"BYE"});cur=nx}
+ return R}
+const rname=l=>l===14?"Round 1":l===7?"Round 2":l===1?"Final":l===2?"Semi-finals":l===4?"Quarter-finals":"Round of "+l*2;
+function prog(g){const R=build(g);let d=0,t=0;R.flat().forEach(m=>{if(!m.bye){t++;if(m.w)d++}});return[d,t,R]}
+function head(){
+ const tot=P.reduce((a,p)=>a+p[5].length,0);
+ document.getElementById("stats").innerHTML=[[P.length,"students"],[8,"games"],[tot,"sign-ups"],[P.filter(p=>p[3]==="F").length,"women participants"]].map(x=>`<div class="st"><b>${x[0]}</b><span>${x[1]}</span></div>`).join("");
+ document.getElementById("nav").innerHTML=[["home","\u{1F3E0} Overview"]].concat(G.map(g=>[g[0],g[2]+" "+g[1]])).map(x=>`<button class="${view===x[0]?"on":""}" data-v="${x[0]}">${x[1]}</button>`).join("")}
+function home(){
+ const mx=Math.max(...G.map(g=>mk(g[0]).length));
+ let h='<div class="grid">'+G.map(g=>{const L=mk(g[0]),f=L.filter(p=>p[3]==="F").length,[d,t]=prog(g[0]);
+  return `<button class="gc" data-v="${g[0]}"><div class="e">${g[2]}</div><h3>${g[1]}</h3><div><b style="font-size:24px">${L.length}</b> <span class="small">players (${L.length-f} M, ${f} F)</span></div><div class="bar"><i style="width:${L.length/mx*100}%"></i></div><div class="bar g"><i style="width:${d/t*100}%"></i></div><div class="small">${d} of ${t} matches played</div></button>`}).join("")+"</div>";
+ const nx=[];G.forEach(g=>{const R=prog(g[0])[2];R.forEach((r,i)=>r.forEach(m=>{if(!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD")nx.push([g,m,rname(R[i].length)])}))});
+ h+=`<div class="box"><h2>Next matches to play</h2><div class="next">${nx.length?nx.slice(0,12).map(x=>`<div class="chip">${x[0][2]} ${esc(x[1].a)} vs ${esc(x[1].b)}<small>${x[0][1]}, ${x[2]}${tmx(x[0][0],x[1].k)}</small></div>`).join(""):'<span class="small">No matches waiting.</span>'}</div><p class="small">Showing ${Math.min(12,nx.length)} of ${nx.length} ready matches. Open a game to see its bracket.</p></div>`;
+ if(edit)h+=`<div class="box"><h2>Check before the event (organisers only)</h2><div class="flag">Pranav Varadpande's mobile number is incomplete in the form responses.</div><div class="flag">Entry "DT26MTECH14013" has an email ID instead of a name.</div><div class="flag">Badminton: Sumitkumar Chandanshive is in two Round 1 matches (Group 1 match 3 and Group 2 match 3). Neha Mishra, Rubleen Khosa and Pranav Varadpande are not in the schedule.</div><div class="flag">8 students picked Volleyball without listing teammates, so the Volleyball bracket uses individual names. Replace them with team names once teams are set.</div></div>`;
+ return h}
+function game(g){
+ const [d,t,R]=prog(g),info=gi(g),L=mk(g),fin=R[R.length-1][0];
+ let h=`<div class="top"><h2>${info[2]} ${info[1]}</h2><div class="act">${edit?(FIX[g]?"":'<button data-a="shuf">New draw</button>')+'<button data-a="rst">Clear results</button>':""}</div></div>
+ <p class="small">${L.length} players, ${d} of ${t} matches played. ${FIX[g]?"Draw and times set by the organisers.":"Byes move straight to the next round."}</p><div class="bar g"><i style="width:${d/t*100}%"></i></div>`;
+ if(fin.w)h+=`<div class="champ">\u{1F3C6} Champion: ${esc(fin.w)}</div>`;
+ const nx=[];R.forEach((r,i)=>r.forEach(m=>{if(!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD")nx.push([m,rname(r.length)])}));
+ h+=`<div class="box"><h2>Play next</h2><div class="next">${nx.length?nx.map(x=>`<div class="chip">${esc(x[0].a)} vs ${esc(x[0].b)}<small>${x[1]}${tmx(g,x[0].k)}</small></div>`).join(""):'<span class="small">Nothing waiting right now.</span>'}</div></div>`;
+ const TT=TIMES[g];let sch="";
+ if(TT){const rw=[];R.forEach(r=>r.forEach(m=>{if(TT[m.k]&&!m.bye)rw.push([TT[m.k],m])}));rw.sort((x,y)=>x[0]<y[0]?-1:x[0]>y[0]?1:0);
+  sch=`<div class="box"><h2>Match schedule (tentative)</h2><div class="tw"><table><tr><th>Time</th><th>Round</th><th>Match</th><th>Result</th></tr>${rw.map(x=>`<tr><td>${fmt(x[0])}</td><td>Round ${+x[1].k[0]+1}</td><td>${esc(x[1].a)} vs ${esc(x[1].b)}</td><td>${x[1].w?"Winner: "+esc(x[1].w):"Pending"}</td></tr>`).join("")}</table></div></div>`}
+ h+=sch+'<div class="box"><h2>Knockout bracket</h2><div class="br">'+R.map(r=>`<div class="rd"><h4>${rname(r.length)}</h4>${r.map(m=>{
+  const c=x=>m.bye&&x===m.b?"bye":x==="TBD"?"tbd":m.w?(m.w===x?"win":"lose"):"";
+  const ok=x=>edit&&x!=="TBD"&&x!=="BYE"&&!m.bye&&m.a!=="TBD"&&m.b!=="TBD";
+  const pb=x=>`<button class="pl ${c(x)}" ${ok(x)?`data-k="${m.k}" data-n="${esc(x)}"`:"disabled"}>${esc(x)}</button>`;
+  const tt=TT&&TT[m.k]?`<div class="tm">${fmt(TT[m.k])}</div>`:"";
+  return `<div class="m ${!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD"?"rdy":""}">${tt}${pb(m.a)}${pb(m.b)}</div>`}).join("")}</div>`).join("")+"</div></div>";
+ h+=`<div class="box"><h2>Players</h2><input type="search" id="q" placeholder="Search name or branch" value="${esc(q)}"><div class="tw"><table><tr><th>#</th><th>Name</th><th>Class</th><th>Gender</th><th>Branch</th></tr>${L.filter(p=>(p[0]+p[4]).toLowerCase().includes(q.toLowerCase())).map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p[0])}</td><td>${p[2]}</td><td>${p[3]}</td><td>${esc(p[4])}</td></tr>`).join("")}</table></div></div>`;
+ return h}
+function render(){head();const m=document.getElementById("main"),o=document.getElementById("q"),p=o&&document.activeElement===o?o.selectionStart:-1;
+ document.getElementById("sub").textContent="Who is playing what, and live knockout brackets. "+(edit?"Tap a player in a match to mark them the winner.":"Results are updated by the organisers.");
+ m.innerHTML=view==="home"?home():game(view);
+ const s=document.getElementById("q");if(s){s.oninput=e=>{q=e.target.value;render()};if(p>=0){s.focus();s.setSelectionRange(p,p)}}}
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-v],[data-k],[data-a]");if(!b)return;const a=b.dataset.a;
+ if(a==="tok"||a==="tokno"){ask=a==="tok";note("");foot();if(ask)document.getElementById("tk").focus();return}
+ if(a==="tokok"){signin(document.getElementById("tk").value);return}
+ if(a==="out"){signout();return}
+ if((b.dataset.k||a)&&!edit)return;
+ if(b.dataset.v){view=b.dataset.v;q="";render();window.scrollTo(0,0)}
+ else if(b.dataset.k){const W=S.win[view]=S.win[view]||{};if(W[b.dataset.k]===b.dataset.n)delete W[b.dataset.k];else W[b.dataset.k]=b.dataset.n;save();render()}
+ else if(b.dataset.a==="shuf"){if(confirm("Make a new random draw? Results for this game will be cleared.")){S.seed[view]=(S.seed[view]||1)+1;S.win[view]={};save();render()}}
+ else if(b.dataset.a==="rst"){if(confirm("Clear all results for this game?")){S.win[view]={};save();render()}}});
+render();foot();
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="tk")signin(e.target.value)});
+if(GH){if(tok)signin(tok,true);else pull();setInterval(()=>{if(!pend&&!document.hidden)pull()},30000)}
+</script></body></html>
