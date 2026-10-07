@@ -81,6 +81,10 @@ button:focus-visible,.pl:focus-visible,input:focus-visible{outline:2px solid var
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}
 th{color:var(--mut);font-weight:600}
+tr.q td{background:var(--okbg)}
+.lrow{display:flex;align-items:center;gap:6px;padding:6px 10px;border-top:1px solid var(--bd);font-size:12px;color:var(--mut)}
+.sc{width:58px;padding:4px 6px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--tx);font:inherit;font-size:13px}
+.scv{font-weight:700;margin-left:auto;padding:0 6px}
 .pk{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:999px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}
 .pk.on{background:var(--okbg);border-color:var(--ok);font-weight:700}
 .rm{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:6px;padding:2px 8px;font:inherit;font-size:12px;cursor:pointer;margin-left:6px}
@@ -168,7 +172,7 @@ const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","De
 const fmt=s=>{const[y,mo,d,h,m]=s.split(/[-T:]/).map(Number);return d+" "+MON[mo-1]+", "+((h%12)||12)+":"+String(m).padStart(2,"0")+" "+(h<12?"AM":"PM")};
 // match time: first-round times travel with their match (S.dt) when organisers add or delete matches
 const dtimes=g=>{const n=slots(g).length/2,D=Array.isArray(S.dt[g])?S.dt[g]:null;return Array.from({length:n},(_,i)=>iso(D?D[i]:TIMES[g]&&TIMES[g]["0-"+i]))};
-const tm=(g,k)=>{if(k.startsWith("0-"))return dtimes(g)[+k.slice(2)]||"";const r=S.rt[g];return iso(r&&k in r?r[k]:TIMES[g]&&TIMES[g][k])};
+const tm=(g,k)=>{if(LEAGUE[g]){const m=lg(g).all.find(m=>m.k===k);return m?m.t:""}if(k.startsWith("0-"))return dtimes(g)[+k.slice(2)]||"";const r=S.rt[g];return iso(r&&k in r?r[k]:TIMES[g]&&TIMES[g][k])};
 const tkey=(g,m)=>tm(g,m.k)||"~",byt=(g,a,b)=>tkey(g,a)<tkey(g,b)?-1:tkey(g,a)>tkey(g,b)?1:0;
 const tmx=(g,k)=>tm(g,k)?", "+fmt(tm(g,k)):"";
 // Results live in results.json in the GitHub repo. Everyone reads it; only people with
@@ -177,7 +181,7 @@ const REPO="";// set to "owner/repo" only if the page is not served from owner.g
 const H=location.hostname,seg=location.pathname.split("/")[1]||"";
 const GH=REPO||(H.endsWith(".github.io")?H.split(".")[0]+"/"+(seg&&!seg.includes(".")?seg:H):"");
 const API="https://api.github.com/repos/"+GH,FILE="results.json";
-const norm=x=>({seed:(x&&x.seed)||{},win:(x&&x.win)||{},extra:(x&&x.extra)||{},mem:(x&&x.mem)||{},draw:(x&&x.draw)||{},dt:(x&&x.dt)||{},rt:(x&&x.rt)||{},xp:(x&&x.xp)||{}});
+const norm=x=>({seed:(x&&x.seed)||{},win:(x&&x.win)||{},extra:(x&&x.extra)||{},mem:(x&&x.mem)||{},draw:(x&&x.draw)||{},dt:(x&&x.dt)||{},rt:(x&&x.rt)||{},xp:(x&&x.xp)||{},sc:(x&&x.sc)||{},lt:(x&&x.lt)||{}});
 let S=norm(),edit=!GH,tok="",sha="",br="main",ver=0,pend=0,chain=Promise.resolve(),ask=false;
 try{tok=localStorage.getItem("cip26tok")||""}catch(e){}
 if(!GH)try{S=norm(JSON.parse(localStorage.getItem("cip26")))}catch(e){}
@@ -270,7 +274,23 @@ function build(g){
  return R}
 let dmode=null;// placing mode for Round 1: null = automatic (on while the draw is empty)
 const rname=(l,i)=>l===1?"Final":l===2?"Semi-finals":l<=4?"Quarter-finals":"Round "+(i+1);
-function prog(g){if(!ready(g))return[0,0,[]];if(NOKO.includes(g))return[pod(g)[0]?1:0,1,[]];const R=build(g);let d=0,t=0;R.flat().forEach(m=>{if(!m.bye){t++;if(m.w)d++}});return[d,t,R]}
+// League games: every team plays every other team once, 2 points a win, top two play the final.
+// start = first match, gap = minutes between matches (organisers can change any time on the page).
+const LEAGUE={v:{start:"2026-10-09T21:00",gap:30}};
+const addMin=(s,n)=>{const[y,mo,d,h,m]=s.split(/[-T:]/).map(Number),t=new Date(y,mo-1,d,h,m+n),p=x=>String(x).padStart(2,"0");return t.getFullYear()+"-"+p(t.getMonth()+1)+"-"+p(t.getDate())+"T"+p(t.getHours())+":"+p(t.getMinutes())};
+function lg(g){
+ const T=ex(g),W=S.win[g]||{},SC=S.sc[g]||{},LT=S.lt[g]||{},n=T.length,cf=LEAGUE[g],M=[];
+ // round-robin by the circle method, ordered so 4 teams give 1v2, 3v4, 1v3, 2v4, 1v4, 2v3
+ const a=[0];for(let i=2;i<n;i++)a.push(i);if(n>1)a.push(1);if(a.length%2)a.push(-1);
+ for(let r=0;r<a.length-1;r++){for(let i=0;i<a.length/2;i++){const x=a[i],y=a[a.length-1-i];if(x>=0&&y>=0)M.push({a:T[Math.min(x,y)],b:T[Math.max(x,y)]})}a.push(a.splice(1,1)[0])}
+ const fill=(m,i)=>{m.bye=false;m.w=[m.a,m.b].includes(W[m.k])&&m.a!=="TBD"&&m.b!=="TBD"?W[m.k]:null;const s=SC[m.k];m.sc=Array.isArray(s)&&s.length===2&&s.every(x=>Number.isFinite(x)&&x>=0)?s:null;m.t=iso(m.k in LT?LT[m.k]:addMin(cf.start,cf.gap*i))};
+ M.forEach((m,i)=>{m.k="L:"+m.a+"|"+m.b;m.lb="League match "+(i+1);fill(m,i)});
+ const tb=T.map((t,i)=>({n:t,i,p:0,w:0,l:0,pd:0}));
+ M.forEach(m=>{const A=tb.find(x=>x.n===m.a),B=tb.find(x=>x.n===m.b);if(m.w){A.p++;B.p++;(m.w===m.a?A:B).w++;(m.w===m.a?B:A).l++}if(m.sc){A.pd+=m.sc[0]-m.sc[1];B.pd+=m.sc[1]-m.sc[0]}});
+ tb.sort((x,y)=>y.w-x.w||y.pd-x.pd||x.i-y.i);
+ const done=M.length>0&&M.every(m=>m.w),fin={a:done?tb[0].n:"TBD",b:done?tb[1].n:"TBD",k:"F",lb:"Final"};fill(fin,M.length);
+ return{M,tb,fin,done,all:M.concat(fin)}}
+function prog(g){if(!ready(g))return[0,0,[]];if(LEAGUE[g]){const A=lg(g).all;return[A.filter(m=>m.w).length,A.length,[A]]}if(NOKO.includes(g))return[pod(g)[0]?1:0,1,[]];const R=build(g);let d=0,t=0;R.flat().forEach(m=>{if(!m.bye){t++;if(m.w)d++}});return[d,t,R]}
 function head(){
  const tot=P.reduce((a,p)=>a+p[5].length,0);
  document.getElementById("stats").innerHTML=[[P.length,"students"],[8,"games"],[tot,"sign-ups"],[P.filter(p=>p[3]==="F").length,"women participants"]].map(x=>`<div class="st"><b>${x[0]}</b><span>${x[1]}</span></div>`).join("");
@@ -281,7 +301,7 @@ function home(){
  const mx=Math.max(...G.map(g=>mk(g[0]).length));
  let h='<div class="grid">'+G.map(g=>{const L=mk(g[0]),f=L.filter(p=>p[3]==="F").length,[d,t]=prog(g[0]);
   return `<button class="gc" data-v="${g[0]}"><div class="e">${g[2]}</div><h3>${g[1]}</h3><div><b style="font-size:24px">${L.length}</b> <span class="small">players (${L.length-f} M, ${f} F)${ex(g[0]).length?(TEAM.includes(g[0])?", "+ex(g[0]).length+" "+unit(g[0])+(ex(g[0]).length===1?"":"s"):", + "+ex(g[0]).length+" added"):""}</span></div><div class="bar"><i style="width:${L.length/mx*100}%"></i></div><div class="bar g"><i style="width:${t?d/t*100:0}%"></i></div><div class="small">${!ready(g[0])?cap(unit(g[0]))+"s not formed yet":NOKO.includes(g[0])?(pod(g[0])[0]?"Winner: "+esc(pod(g[0])[0]):"Single event, result pending"):d+" of "+t+" matches played"}</div></button>`}).join("")+"</div>";
- const nx=[];G.forEach(g=>{const R=prog(g[0])[2];R.forEach((r,i)=>r.forEach(m=>{if(!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD")nx.push([g,m,rname(R[i].length,i)])}))});
+ const nx=[];G.forEach(g=>{const R=prog(g[0])[2];R.forEach((r,i)=>r.forEach(m=>{if(!m.bye&&!m.w&&m.a!=="TBD"&&m.b!=="TBD")nx.push([g,m,m.lb||rname(R[i].length,i)])}))});
  const grp=G.map(g=>[g,nx.filter(x=>x[0]===g).sort((x,y)=>byt(g[0],x[1],y[1]))]).filter(x=>x[1].length);
  h+=`<div class="box"><h2>Next matches to play</h2>${nx.length?`<div class="cols">${grp.map(([g,l])=>`<div class="grp"><button class="gh" data-v="${g[0]}"><span>${g[2]} ${g[1]}</span><small>${l.length} ready</small></button>${l.slice(0,4).map(x=>`<div class="mr"><span>${esc(x[1].a)} <i>vs</i> ${esc(x[1].b)}</span><small>${x[2]}${tmx(g[0],x[1].k)}</small></div>`).join("")}${l.length>4?`<div class="small more">+ ${l.length-4} more in ${g[1]}</div>`:""}</div>`).join("")}</div>`:'<span class="small">No matches waiting.</span>'}<p class="small">${nx.length} matches are ready across ${grp.length} games, earliest first. Tap a game name to see its bracket.</p></div>`;
  h+=`<div class="box"><h2>Coordinators</h2>${cards()}</div>`;
@@ -290,7 +310,7 @@ function home(){
 function tail(g,L,X){let h="";const T=TEAM.includes(g),u=unit(g),U=cap(u),ql=q.toLowerCase();
  const taken=X.flatMap(x=>mem(g,x)),free=L.map(p=>p[0]).filter(n=>!taken.includes(n)).sort((a,b)=>a.localeCompare(b)),gen=n=>{const p=L.find(p=>p[0]===n);return p?" ("+p[3]+")":""},XP=xp(g);
  if(T)h+=`<div class="box"><h2>${U}s</h2>${X.length?`<div class="cols">${X.map((x,i)=>{const M=mem(g,x);return `<div class="grp"><div class="gh st"><span>${esc(x)}</span>${edit?`<button class="rm" data-a="delt" data-i="${i}" aria-label="Remove ${esc(x)}">Remove</button>`:`<small>${M.length?M.length+" players":""}</small>`}</div>${edit?`<div class="mr mb">${M.length?M.map(n=>`<span class="chip">${esc(n)}${gen(n)} <button class="rm" data-a="delp" data-i="${i}" data-n="${esc(n)}" aria-label="Remove ${esc(n)} from ${esc(x)}">×</button></span>`).join(""):'<span class="small">No members yet</span>'}</div><select data-mb="${i}" aria-label="Add a player to ${esc(x)}"${free.length?"":" disabled"}><option value="">${free.length?"Add a player...":"Everyone is in a "+u}</option>${free.map(n=>`<option value="${esc(n)}">${esc(n)}${gen(n)}</option>`).join("")}</select>`:`<div class="mr"><span>${M.length?M.map(esc).join(", "):"Members not listed"}</span></div>`}</div>`}).join("")}</div>${edit?`<p class="small">${free.length?free.length+" of "+L.length+" sign-ups are not in a "+u+" yet.":"All "+L.length+" sign-ups are in a "+u+"."}</p>`:""}`:`<span class="small">${U}s have not been formed yet. Everyone who signed up is listed below.</span>`}</div>`;
- if(edit)h+=`<div class="box"><h2>${T?"Form "+u+"s":"Add a player"}</h2>`+(T?`<p class="small">Add a ${u} by name, then pick its members in the ${U}s box above. Or split the ${L.length} sign-ups into random ${u}s and adjust them afterwards. ${NOKO.includes(g)?"":"Then place the "+u+"s in the bracket above with Edit draw."}</p><p><label for="ts">Players per ${u}</label> <input type="number" id="ts" min="2" max="20" value="${SZ[g]}"> <span class="act"><button data-a="mkt"${played(g)?" disabled":""}>Make random ${u}s</button></span></p>${played(g)?`<p class="small">Random ${u}s are switched off because this game already has results.</p>`:""}`:`<p class="small">${NOKO.includes(g)?"Adds a participant who did not sign up for this game.":"Adds a player who did not sign up for this game. Then place them in the bracket above with Edit draw."}</p>`)+`<input type="text" id="tn" maxlength="60" placeholder="${T?U+" name":"Player name"}" aria-label="${T?U+" name":"Player name"}"> <span class="act"><button data-a="addt">Add ${T?u:"player"}</button></span>${tmsg?`<div class="flag">${esc(tmsg)}</div>`:""}${!T&&X.length?`<div class="next" style="margin-top:10px">${X.map((x,i)=>`<div class="chip">${esc(x)} <button class="rm" data-a="delt" data-i="${i}" aria-label="Remove ${esc(x)}">Remove</button></div>`).join("")}</div>`:""}${T?`<h2 style="margin-top:16px">Add a player</h2><p class="small">For someone who did not sign up for this game. They join the list below and can then be picked for a ${u}.</p><input type="text" id="pn" maxlength="60" placeholder="Player name" aria-label="Player name"> <select id="pg" aria-label="Gender"><option value="M">Male</option><option value="F">Female</option></select> <span class="act"><button data-a="addp">Add player</button></span>${XP.length?`<div class="next" style="margin-top:10px">${XP.map((o,i)=>`<div class="chip">${esc(o.n)} (${o.g}) <button class="rm" data-a="delxp" data-i="${i}" aria-label="Remove ${esc(o.n)}">Remove</button></div>`).join("")}</div>`:""}`:""}</div>`;
+ if(edit)h+=`<div class="box"><h2>${T?"Form "+u+"s":"Add a player"}</h2>`+(T?`<p class="small">Add a ${u} by name, then pick its members in the ${U}s box above. Or split the ${L.length} sign-ups into random ${u}s and adjust them afterwards. ${NOKO.includes(g)?"":LEAGUE[g]?"League matches are made automatically from the "+u+"s.":"Then place the "+u+"s in the bracket above with Edit draw."}</p><p><label for="ts">Players per ${u}</label> <input type="number" id="ts" min="2" max="20" value="${SZ[g]}"> <span class="act"><button data-a="mkt"${played(g)?" disabled":""}>Make random ${u}s</button></span></p>${played(g)?`<p class="small">Random ${u}s are switched off because this game already has results.</p>`:""}`:`<p class="small">${NOKO.includes(g)?"Adds a participant who did not sign up for this game.":"Adds a player who did not sign up for this game. Then place them in the bracket above with Edit draw."}</p>`)+`<input type="text" id="tn" maxlength="60" placeholder="${T?U+" name":"Player name"}" aria-label="${T?U+" name":"Player name"}"> <span class="act"><button data-a="addt">Add ${T?u:"player"}</button></span>${tmsg?`<div class="flag">${esc(tmsg)}</div>`:""}${!T&&X.length?`<div class="next" style="margin-top:10px">${X.map((x,i)=>`<div class="chip">${esc(x)} <button class="rm" data-a="delt" data-i="${i}" aria-label="Remove ${esc(x)}">Remove</button></div>`).join("")}</div>`:""}${T?`<h2 style="margin-top:16px">Add a player</h2><p class="small">For someone who did not sign up for this game. They join the list below and can then be picked for a ${u}.</p><input type="text" id="pn" maxlength="60" placeholder="Player name" aria-label="Player name"> <select id="pg" aria-label="Gender"><option value="M">Male</option><option value="F">Female</option></select> <span class="act"><button data-a="addp">Add player</button></span>${XP.length?`<div class="next" style="margin-top:10px">${XP.map((o,i)=>`<div class="chip">${esc(o.n)} (${o.g}) <button class="rm" data-a="delxp" data-i="${i}" aria-label="Remove ${esc(o.n)}">Remove</button></div>`).join("")}</div>`:""}`:""}</div>`;
  h+=`<div class="box"><h2>${T?"Signed-up players":"Players"}</h2><input type="search" id="q" placeholder="Search name or branch" value="${esc(q)}"><div class="tw"><table><tr><th>#</th><th>Name</th><th>Class</th><th>Gender</th><th>Branch</th></tr>${L.filter(p=>(p[0]+p[4]).toLowerCase().includes(ql)).map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p[0])}</td><td>${p[2]}</td><td>${p[3]}</td><td>${esc(p[4])}</td></tr>`).join("")}${T?"":X.filter(x=>x.toLowerCase().includes(ql)).map(x=>`<tr><td>+</td><td>${esc(x)}</td><td colspan="3">Added by organisers</td></tr>`).join("")}</table></div></div>`;
  return h}
 // single-event games: no bracket, organisers record 1st/2nd/3rd
@@ -303,9 +323,24 @@ function race(g){
  h+=`<div class="box"><h2>Results</h2><div class="next">${PL.map((p,i)=>`<div class="chip">${MD[i]} ${p} place<small>${W[i]?esc(W[i]):"Pending"}</small></div>`).join("")}</div>`;
  if(edit)h+=`<p class="small">Tap a ${T?u:"participant"} to give them the next free place. Tap a placed one to take their place away.</p><div class="next">${all.map(n=>{const i=W.indexOf(n);return `<button class="pk${i>=0?" on":""}" data-p="${esc(n)}">${i>=0?MD[i]+" ":""}${esc(n)}</button>`}).join("")}</div>`;
  return h+"</div>"+tail(g,L,X)}
+let ltmode=false;// organisers editing league match times
+const ptable=g=>{const L=lg(g);return `<div class="tw"><table><tr><th>#</th><th>Team</th><th>Played</th><th>Won</th><th>Lost</th><th>Points</th><th>Point diff</th></tr>${L.tb.map((t,i)=>`<tr class="${i<2?"q":""}"><td>${i+1}</td><td>${esc(t.n)}</td><td>${t.p}</td><td>${t.w}</td><td>${t.l}</td><td><b>${t.w*2}</b></td><td>${t.pd>0?"+":""}${t.pd}</td></tr>`).join("")}</table></div>`};
+function league(g){
+ const info=gi(g),L=mk(g),X=ex(g),D=lg(g),A=D.all,d=A.filter(m=>m.w).length;
+ let h=`<div class="top"><h2>${info[2]} ${info[1]}</h2></div>
+ <p class="small">${X.length} teams from ${L.length} sign-ups, ${d} of ${A.length} matches played. Each team plays every other team once; the top two on points play the final.</p><div class="bar g"><i style="width:${d/A.length*100}%"></i></div>`;
+ if(D.fin.w)h+=`<div class="champ">\u{1F3C6} Champion: ${esc(D.fin.w)}</div>`;
+ h+=`<div class="box"><h2>Points table</h2><div id="lgt">${ptable(g)}</div><p class="small">Win = 2 points, loss = 0. Teams level on points are separated by point difference (points scored minus points conceded). The top two, shaded, play the final.</p></div>`;
+ const card=m=>{const ok=edit&&m.a!=="TBD"&&m.b!=="TBD",nm=(x,i)=>x==="TBD"?"Rank "+(i+1)+" (after league matches)":x;
+  const pb=(x,i)=>`<button class="pl ${x==="TBD"?"tbd":m.w?(m.w===x?"win":"lose"):""}" ${ok?`data-k="${esc(m.k)}" data-n="${esc(x)}"`:"disabled"}><span>${esc(nm(x,i))}</span>${m.sc?`<span class="scv">${m.sc[i]}</span>`:""}</button>`;
+  const si=i=>`<input class="sc" type="number" min="0" max="999" inputmode="numeric" data-sc="${esc(m.k)}" data-side="${i}" value="${m.sc?m.sc[i]:""}" aria-label="Points scored by ${esc(nm(i?m.b:m.a,i))}">`;
+  return `<div class="m ${ok&&!m.w?"rdy":""}"><div class="tm">${m.lb}${m.t?" · "+fmt(m.t):""}</div>${pb(m.a,0)}${pb(m.b,1)}${ok?`<div class="lrow">Points scored ${si(0)} – ${si(1)}</div>`:""}${edit&&ltmode?`<input type="datetime-local" class="ti" data-lt="${esc(m.k)}" value="${esc(m.t)}" aria-label="Date and time, ${m.lb}">`:""}</div>`};
+ h+=`<div class="box"><div class="bh"><h2>Match schedule</h2>${edit?`<span class="act"><button data-a="ltm">${ltmode?"Done":"Edit times"}</button></span>`:""}</div>${edit?`<p class="small">Tap a team to mark it the winner. Enter the points each team scored so that ties on the points table can be broken.</p>`:""}<div class="cols">${A.map(card).join("")}</div></div>`;
+ return h+tail(g,L,X)}
 function game(g){
  if(NOKO.includes(g))return race(g);
- if(!ready(g)){const i=gi(g),L=mk(g);return `<div class="top"><h2>${i[2]} ${i[1]}</h2></div><p class="small">${L.length} sign-ups. The bracket appears once at least two teams are formed.</p>`+tail(g,L,ex(g))}
+ if(!ready(g)){const i=gi(g),L=mk(g);return `<div class="top"><h2>${i[2]} ${i[1]}</h2></div><p class="small">${L.length} sign-ups. The ${LEAGUE[g]?"league table":"bracket"} appears once at least two teams are formed.</p>`+tail(g,L,ex(g))}
+ if(LEAGUE[g])return league(g);
  const [d,t,R]=prog(g),info=gi(g),L=mk(g),X=ex(g),fin=R[R.length-1][0];
  let h=`<div class="top"><h2>${info[2]} ${info[1]}</h2></div>
  <p class="small">${TEAM.includes(g)?X.length+" teams from "+L.length+" sign-ups":L.length+" players"+(X.length?", "+X.length+" added by organisers":"")}, ${d} of ${t} matches played. The organisers set the draw. Byes move straight to the next round.</p><div class="bar g"><i style="width:${t?d/t*100:0}%"></i></div>`;
@@ -360,12 +395,18 @@ document.addEventListener("click",e=>{
  else if(a==="delxp"){const L=xp(view),o=L[+b.dataset.i];if(o&&confirm('Remove "'+o.n+'" from this game?')){L.splice(+b.dataset.i,1);S.xp[view]=L;const M=S.mem[view]||{};Object.keys(M).forEach(t=>{if(Array.isArray(M[t]))M[t]=M[t].filter(n=>n!==o.n)});save();render()}}
  else if(a==="delp"){const t=ex(view)[+b.dataset.i],M=S.mem[view];if(t&&M&&Array.isArray(M[t])){M[t]=M[t].filter(n=>n!==b.dataset.n);save();render()}}
  else if(a==="mvu"||a==="mvd"){const i=+b.dataset.i;moveMatch(i,a==="mvu"?i-1:i+1)}
+ else if(a==="ltm"){ltmode=!ltmode;render()}
  else if(a==="dm"){dmode=!(dmode===null?slots(view).every(x=>!x):dmode);render()}
 });
 document.addEventListener("change",e=>{const i=e.target.dataset?e.target.dataset.mb:undefined,v=e.target.value;if(i===undefined||!edit||!v)return;
  const t=ex(view)[+i];if(!t||!mk(view).some(p=>p[0]===v)||ex(view).some(x=>mem(view,x).includes(v)))return;
  const M=S.mem[view]=S.mem[view]||{};M[t]=mem(view,t).concat(v);save();render();
  const n=document.querySelector('[data-mb="'+i+'"]');if(n)n.focus()});
+// league score and time boxes: saved without redrawing the cards, so typing is not interrupted; only the points table refreshes
+document.addEventListener("change",e=>{const d=e.target.dataset||{};if(!edit||!LEAGUE[view])return;
+ if(d.sc!==undefined){const v=[0,1].map(i=>{const x=document.querySelector('[data-sc="'+CSS.escape(d.sc)+'"][data-side="'+i+'"]');return x&&x.value!==""?Math.max(0,Math.min(999,Math.round(+x.value))):null}),SC=S.sc[view]=S.sc[view]||{};
+  if(v[0]===null||v[1]===null||!Number.isFinite(v[0]+v[1]))delete SC[d.sc];else SC[d.sc]=v;save();const t=document.getElementById("lgt");if(t)t.innerHTML=ptable(view)}
+ else if(d.lt!==undefined){(S.lt[view]=S.lt[view]||{})[d.lt]=iso(e.target.value);save()}});
 let dragM=null;const over=t=>document.querySelectorAll(".m.over").forEach(x=>x!==t&&x.classList.remove("over")),card=e=>dragM!==null&&e.target.closest?e.target.closest("[data-mt]"):null;
 document.addEventListener("dragstart",e=>{const d=edit&&e.target.closest?e.target.closest("[data-m]"):null;if(!d)return;dragM=+d.dataset.m;e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain","match");const c=d.closest(".m");if(c&&e.dataTransfer.setDragImage)e.dataTransfer.setDragImage(c,20,14)});
 document.addEventListener("dragover",e=>{const t=card(e);if(!t)return;e.preventDefault();over(t);t.classList.add("over")});
