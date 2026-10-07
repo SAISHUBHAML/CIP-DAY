@@ -1,0 +1,5 @@
+# original coordinator photos; only the cropped photos/*.jpg are published
+photos/*.jpeg
+photos/*.png
+# private notes with email IDs
+coordinator_details.txt
