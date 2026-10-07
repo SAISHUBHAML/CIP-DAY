@@ -5,7 +5,8 @@
  "win": {
   "v": {
    "L:Team 1|Team 2": "Team 1",
-   "L:Team 3|Desi Boys": "Desi Boys"
+   "L:Team 3|Desi Boys": "Desi Boys",
+   "L:Team 1|Team 3": "Team 3"
   },
   "r": {
    "1-1": "Junaid Sayyad",
