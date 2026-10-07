@@ -12,7 +12,8 @@
   "s": {},
   "l": {},
   "t": {},
-  "w": {}
+  "w": {},
+  "h": {}
  },
  "extra": {
   "b": [
@@ -35,6 +36,13 @@
    "Sample Test 2",
    "Sample Test 3",
    "Sample Test 4"
+  ],
+  "h": [
+   "Team 1",
+   "Team 2",
+   "Team 3",
+   "Team 4",
+   "Team 5"
   ]
  },
  "mem": {
@@ -98,6 +106,36 @@
     "Sreerag P",
     "Vakada Keerthana Vedavathi"
    ]
+  },
+  "h": {
+   "Team 1": [
+    "Rohit",
+    "Shubham",
+    "Vasu Dev Ganda",
+    "Pranav Anish"
+   ],
+   "Team 2": [
+    "Junaid Sayyad",
+    "Banothu Sagar",
+    "Prahas",
+    "Vishnu Babu"
+   ],
+   "Team 3": [
+    "Neha Mishra",
+    "Sreehari K N",
+    "Rubleen Khosa",
+    "Vakada Keerthana Vedavathi"
+   ],
+   "Team 4": [
+    "Bandi Shiva Kumar",
+    "Devashish Nagpal",
+    "Sri Vadan Surakattula"
+   ],
+   "Team 5": [
+    "Sawan Kumar",
+    "Hrutik Gaikwad",
+    "Nikhil Singh Katiyar"
+   ]
   }
  },
  "draw": {
@@ -128,7 +166,8 @@
    "Sample Test",
    "Sample Test 2",
    "Sample Test 3"
-  ]
+  ],
+  "h": []
  },
  "dt": {
   "b": [
