@@ -24,7 +24,6 @@
    "Sample Test"
   ],
   "v": [
-   "Sample Test",
    "Sample Test 2",
    "Sample Test 3",
    "Sample Test 4"
@@ -38,11 +37,6 @@
  },
  "mem": {
   "v": {
-   "Sample Test": [
-    "Banothu Sagar",
-    "Sai Krishna",
-    "Junaid Sayyad"
-   ],
    "Sample Test 2": [
     "Hrutik Gaikwad",
     "Madhava",
