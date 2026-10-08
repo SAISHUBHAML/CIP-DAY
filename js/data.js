@@ -84,8 +84,8 @@ const C = [
   ["Junaid", "Coordinator", "its_jojo.007", "photos/junaid.jpg"],
   ["Hrutik Gaikwad", "Coordinator", "_hrutik_5122", "photos/hruthik.jpg", "7045542185"],
   ["Syed Nasir", "Coordinator", "nasir_nae8", "photos/nasir.jpg", "7032897527"],
-  ["Saishubham Laisetti", "Coordinator", "", ""],
-  ["Yadla Komal", "Coordinator", "komalyadla", ""]
+  ["Yadla Komal", "Coordinator", "komalyadla", "photos/komal.jpg"],
+  ["Saishubham Laisetti", "Coordinator", "", ""]
 ];
 const t1 = ["20:30", "20:50", "21:10", "21:30", "21:50", "22:10", "22:30"],
   TIMES = {
