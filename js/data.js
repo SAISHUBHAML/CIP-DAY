@@ -48,15 +48,25 @@ const P = [
   ["Sreehari K N", "", "M.Tech", "M", "Defence Technologies", "wrlh"]
 ];
 const G = [
-  ["b", "Badminton", "\u{1F3F8}", "sport"],
+  ["b", "Badminton (Men)", "\u{1F3F8}", "sport"],
+  ["B", "Badminton (Women)", "\u{1F3F8}", "sport"],
   ["v", "Volleyball", "\u{1F3D0}", "sport"],
-  ["t", "Table Tennis", "\u{1F3D3}", "sport"],
+  ["t", "Table Tennis (Men)", "\u{1F3D3}", "sport"],
+  ["T", "Table Tennis (Women)", "\u{1F3D3}", "sport"],
   ["w", "Tug of War", "\u{1FAA2}", "activity"],
   ["s", "Slow Cycling", "\u{1F6B2}", "activity"],
   ["r", "Three Leg Race", "\u{1F45F}", "activity"],
   ["l", "Lemon Spoon Race", "\u{1F944}", "activity"],
   ["h", "Beg Borrow Steal", "\u{1F3AF}", "activity"]
 ];
+// Games split into separate men's and women's brackets: game key -> [sign-up letter, gender].
+// Each key keeps its own draw and results; the sign-up form had one "Badminton" / "Table tennis" choice.
+const SPLIT = {
+  b: ["b", "M"],
+  B: ["b", "F"],
+  t: ["t", "M"],
+  T: ["t", "F"]
+};
 const g1 = [
   ["Nikhil Singh Katiyar", "Sri Vadan Surakattula"],
   ["Girada Narendrakumar", "Shubham Chakraborty"],

@@ -25,7 +25,7 @@ const xp = g => (Array.isArray(S.xp[g]) ? S.xp[g] : []).filter(o => o && typeof 
   n: o.n,
   g: o.g === "F" ? "F" : "M"
 }));
-const mk = g => P.filter(p => p[5].includes(g)).concat(xp(g).map(o => [o.n, "", "Added", o.g, "Added by organisers", g]));
+const mk = g => P.filter(p => SPLIT[g] ? p[5].includes(SPLIT[g][0]) && p[3] === SPLIT[g][1] : p[5].includes(g)).concat(xp(g).map(o => [o.n, "", "Added", o.g, "Added by organisers", g]));
 const gi = g => G.find(x => x[0] === g);
 // teams added by organisers, per game (saved with the results)
 const ex = g => (Array.isArray(S.extra[g]) ? S.extra[g] : []).filter(x => typeof x === "string" && x);

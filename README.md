@@ -10,7 +10,7 @@ Players open the site to see who is playing what and how each game is going. Org
 
 | Game | Entries | Format |
 |---|---|---|
-| Badminton, Table Tennis | Individuals | Knockout bracket |
+| Badminton, Table Tennis | Individuals | Knockout bracket, separate for men and women |
 | Tug of War | Teams | Knockout bracket |
 | Volleyball | Teams | League, then a final between the top two |
 | Slow Cycling, Lemon Spoon Race | Individuals | Single event: 1st, 2nd, 3rd |
