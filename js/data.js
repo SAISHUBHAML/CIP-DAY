@@ -78,14 +78,14 @@ const g2 = [
 const FIX = {
   b: g1.concat(g2)
 };
-// coordinators: [name, role, instagram handle or "", photo path or ""]
+// coordinators: [name, role, instagram handle or "", photo path or "", phone (optional)]
 const C = [
   ["Madhava", "Coordinator", "kbm_0706", "photos/madhava.jpg"],
   ["Junaid", "Coordinator", "its_jojo.007", "photos/junaid.jpg"],
-  ["Hruthik", "Coordinator", "", "photos/hruthik.jpg"],
-  ["Nasir", "Coordinator", "", "photos/nasir.jpg"],
+  ["Hrutik Gaikwad", "Coordinator", "_hrutik_5122", "photos/hruthik.jpg", "7045542185"],
+  ["Syed Nasir", "Coordinator", "nasir_nae8", "photos/nasir.jpg", "7032897527"],
   ["Saishubham Laisetti", "Coordinator", "", ""],
-  ["Komal", "Coordinator", "", ""]
+  ["Komal", "Coordinator", "komalyadla", ""]
 ];
 const t1 = ["20:30", "20:50", "21:10", "21:30", "21:50", "22:10", "22:30"],
   TIMES = {

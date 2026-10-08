@@ -14,7 +14,7 @@ function head() {
     ["co", "\u{1F91D} Coordinators"]
   ]).map(x => `<button class="${view===x[0]?"on":""}" data-v="${x[0]}">${x[1]}</button>`).join("")
 }
-const cards = () => `<div class="cg">${C.map(c=>`<div class="cc">${c[3]?`<img src="${esc(c[3])}" alt="${esc(c[0])}" loading="lazy" width="96" height="96">`:`<div class="ini" aria-hidden="true">${esc(c[0][0])}</div>`}<h3>${esc(c[0])}</h3><div class="small">${esc(c[1])}</div>${c[2]?`<a href="https://www.instagram.com/${encodeURIComponent(c[2])}/" target="_blank" rel="noopener" aria-label="${esc(c[0])} on Instagram">@${esc(c[2])}</a>`:""}</div>`).join("")}</div>`;
+const cards = () => `<div class="cg">${C.map(c=>`<div class="cc">${c[3]?`<img src="${esc(c[3])}" alt="${esc(c[0])}" loading="lazy" width="96" height="96">`:`<div class="ini" aria-hidden="true">${esc(c[0][0])}</div>`}<h3>${esc(c[0])}</h3><div class="small">${esc(c[1])}</div>${c[2]?`<a href="https://www.instagram.com/${encodeURIComponent(c[2])}/" target="_blank" rel="noopener" aria-label="${esc(c[0])} on Instagram">@${esc(c[2])}</a>`:""}${c[4]?`<a href="tel:${esc(c[4])}" aria-label="Call ${esc(c[0])}">\u{1F4DE} ${esc(c[4])}</a>`:""}</div>`).join("")}</div>`;
 
 function coord() {
   return `<div class="top"><h2>\u{1F91D} Coordinators</h2></div><p class="small">The people running CIP Day 2026. Reach out to them for anything about the games.</p>${cards()}`
