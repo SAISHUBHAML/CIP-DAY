@@ -10,9 +10,9 @@ function head() {
   ].map(x => `<div class="st"><b>${x[0]}</b><span>${x[1]}</span></div>`).join("");
   document.getElementById("nav").innerHTML = [
     ["home", "\u{1F3E0} Overview"]
-  ].concat(G.map(g => [g[0], g[2] + " " + g[1]]), [
+  ].concat(G.filter(g => !isW(g[0])).map(g => [g[0], g[2] + " " + base(g[0])]), [
     ["co", "\u{1F91D} Coordinators"]
-  ]).map(x => `<button class="${view===x[0]?"on":""}" data-v="${x[0]}">${x[1]}</button>`).join("")
+  ]).map(x => `<button class="${par(view)===x[0]?"on":""}" data-v="${x[0]}">${x[1]}</button>`).join("")
 }
 const cards = () => `<div class="cg">${C.map(c=>`<div class="cc">${c[3]?`<img src="${esc(c[3])}" alt="${esc(c[0])}" loading="lazy" width="96" height="96">`:`<div class="ini" aria-hidden="true">${esc(c[0][0])}</div>`}<h3>${esc(c[0])}</h3><div class="small">${esc(c[1])}</div>${c[2]?`<a href="https://www.instagram.com/${encodeURIComponent(c[2])}/" target="_blank" rel="noopener" aria-label="${esc(c[0])} on Instagram">@${esc(c[2])}</a>`:""}${c[4]?`<a href="tel:${esc(c[4])}" aria-label="Call ${esc(c[0])}">\u{1F4DE} ${esc(c[4])}</a>`:""}</div>`).join("")}</div>`;
 
@@ -21,12 +21,18 @@ function coord() {
 }
 
 function home() {
-  const mx = Math.max(...G.map(g => mk(g[0]).length));
-  let h = '<div class="grid">' + G.map(g => {
-    const L = mk(g[0]),
+  // one card per tab: a split game's card adds up its men's and women's brackets
+  const tabs = G.filter(g => !isW(g[0])),
+    keys = g => wom(g[0]) ? [g[0], wom(g[0])] : [g[0]];
+  const mx = Math.max(...tabs.map(g => keys(g).flatMap(mk).length));
+  let h = '<div class="grid">' + tabs.map(g => {
+    const L = keys(g).flatMap(mk),
       f = L.filter(p => p[3] === "F").length,
-      [d, t] = prog(g[0]);
-    return `<button class="gc" data-v="${g[0]}"><div class="e">${g[2]}</div><h3>${g[1]}</h3><div><b style="font-size:24px">${L.length}</b> <span class="small">players (${L.length-f} M, ${f} F)${ex(g[0]).length?(TEAM.includes(g[0])?", "+ex(g[0]).length+" "+unit(g[0])+(ex(g[0]).length===1?"":"s"):", + "+ex(g[0]).length+" added"):""}</span></div><div class="bar"><i style="width:${L.length/mx*100}%"></i></div><div class="bar g"><i style="width:${t?d/t*100:0}%"></i></div><div class="small">${!ready(g[0])?cap(unit(g[0]))+"s not formed yet":NOKO.includes(g[0])?(pod(g[0])[0]?"Winner: "+esc(pod(g[0])[0]):"Single event, result pending"):d+" of "+t+" matches played"}</div></button>`
+      pr = keys(g).map(prog),
+      d = pr.reduce((a, x) => a + x[0], 0),
+      t = pr.reduce((a, x) => a + x[1], 0),
+      xn = keys(g).reduce((a, k) => a + ex(k).length, 0);
+    return `<button class="gc" data-v="${g[0]}"><div class="e">${g[2]}</div><h3>${base(g[0])}</h3><div><b style="font-size:24px">${L.length}</b> <span class="small">players (${L.length-f} M, ${f} F)${xn?(TEAM.includes(g[0])?", "+xn+" "+unit(g[0])+(xn===1?"":"s"):", + "+xn+" added"):""}</span></div><div class="bar"><i style="width:${L.length/mx*100}%"></i></div><div class="bar g"><i style="width:${t?d/t*100:0}%"></i></div><div class="small">${!ready(g[0])?cap(unit(g[0]))+"s not formed yet":NOKO.includes(g[0])?(pod(g[0])[0]?"Winner: "+esc(pod(g[0])[0]):"Single event, result pending"):d+" of "+t+" matches played"}</div></button>`
   }).join("") + "</div>";
   const nx = [];
   G.forEach(g => {
@@ -114,7 +120,9 @@ function game(g) {
   }
   if (LEAGUE[g]) return league(g);
   const [d, t, R] = prog(g), info = gi(g), L = mk(g), X = ex(g), fin = R[R.length - 1][0];
-  let h = `<div class="top"><h2>${info[2]} ${info[1]}</h2></div>
+  // split games: one page title with a Men / Women switch between the two brackets
+  const seg = SPLIT[g] ? `<div class="seg" role="group" aria-label="Choose bracket">${[par(g),wom(par(g))].map(k=>`<button class="${k===g?"on":""}" data-v="${k}" aria-pressed="${k===g}">${isW(k)?"Women":"Men"}</button>`).join("")}</div>` : "";
+  let h = `<div class="top"><h2>${info[2]} ${SPLIT[g]?base(g):info[1]}</h2>${seg}</div>
  <p class="small">${TEAM.includes(g)?X.length+" teams from "+L.length+" sign-ups":L.length+" players"+(X.length?", "+X.length+" added by organisers":"")}, ${d} of ${t} matches played. The organisers set the draw. Byes move straight to the next round.</p><div class="bar g"><i style="width:${t?d/t*100:0}%"></i></div>`;
   if (fin.w) h += `<div class="champ">\u{1F3C6} Champion: ${esc(fin.w)}</div>`;
   const nx = [];

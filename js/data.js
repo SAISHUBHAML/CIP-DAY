@@ -67,6 +67,11 @@ const SPLIT = {
   t: ["t", "M"],
   T: ["t", "F"]
 };
+// A split game shows as one tab and one overview card, with a Men / Women switch on its page.
+const isW = g => !!SPLIT[g] && SPLIT[g][1] === "F"; // is this the women's bracket?
+const par = g => isW(g) ? SPLIT[g][0] : g; // the key the tab and card use (the men's key)
+const wom = g => Object.keys(SPLIT).find(k => isW(k) && SPLIT[k][0] === g); // women's key for a tab, if any
+const base = g => G.find(x => x[0] === par(g))[1].replace(/ \(.*\)$/, ""); // "Badminton (Men)" -> "Badminton"
 const g1 = [
   ["Nikhil Singh Katiyar", "Sri Vadan Surakattula"],
   ["Girada Narendrakumar", "Shubham Chakraborty"],

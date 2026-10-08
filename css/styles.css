@@ -138,6 +138,30 @@ nav button.on {
   border-color: var(--tx)
 }
 
+/* Men / Women switch on a split game's page */
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--bd);
+  border-radius: 999px;
+  background: var(--card);
+  padding: 3px
+}
+
+.seg button {
+  border: 0;
+  background: none;
+  color: var(--tx);
+  border-radius: 999px;
+  padding: 6px 18px;
+  font: inherit;
+  cursor: pointer
+}
+
+.seg button.on {
+  background: var(--tx);
+  color: var(--bg)
+}
+
 button:focus-visible,
 .pl:focus-visible,
 input:focus-visible {
