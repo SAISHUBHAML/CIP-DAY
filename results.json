@@ -17,7 +17,7 @@
    "0-3": "Banoth Sagar",
    "0-4": "Sreerag P",
    "0-10": "Hardik",
-   "0-12": "Hrutik Gaikwad",
+   "0-13": "Hrutik Gaikwad",
    "0-11": "Junaid Sayyad"
   },
   "s": {
@@ -194,10 +194,10 @@
    "Al Amin",
    "Junaid Sayyad",
    "Kailash Sathya Narayanan",
-   "Hrutik Gaikwad",
-   "Rohit",
    "Banothu Sagar",
-   "Sai Krishna"
+   "Sai Krishna",
+   "Hrutik Gaikwad",
+   "Rohit"
   ],
   "t": [
    "Aditya Naik",
@@ -259,8 +259,8 @@
    "2026-10-08T21:30",
    "2026-10-08T21:50",
    "2026-10-08T22:10",
-   "2026-10-08T22:30",
-   ""
+   "",
+   "2026-10-08T22:30"
   ],
   "t": [
    "2026-10-08T20:30",
